@@ -31,11 +31,13 @@ public:
     bool importReleasedStocksFromCSV(const QString&);
     bool importOperationsFromCSV(const QString&);
     //Broker
-    void loadBrokersAccountDataToTextEdit(QString, QTextEdit*, QString = "");      // вывод связанных счетов
-    //void loadBrokersOperationsDataToTextEdit(QTextEdit*, QString = "");   // вывод связанных операций
-    void loadBrokersStocksDataToTextEdit(QString, QTextEdit*, QString = "");       // вывод связанных ценных бумаг
-    void brokerFormInit(QString, QLabel*, QLabel*, QLabel*, QLabel*);
-    void brokerFormUpdate(QString, QLabel*, QLabel* );
+    void loadBrokersAccountDataToTextEdit(QString, QTextEdit*, QString = "");     // вывод связанных счетов
+    void loadBrokersOperationsDataToTextEdit(QString,QTextEdit*, QString = "");   // вывод связанных операций
+    void loadBrokersStocksDataToTextEdit(QString, QTextEdit*, QString = "");      // вывод связанных ценных бумаг
+    void brokerFormInit(QString, QLabel*, QLabel*, QLabel*, QLabel*);   // основная инфа
+    void brokerFormUpdate(QString, QLabel*, QLabel* );                  // обновление вспомогательных данных
+    void deleteBrokerAccount(QString, QTextEdit*, QString);             // удаление счёта
+
     //Operator
     //HR
     //Director

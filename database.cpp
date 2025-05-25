@@ -570,3 +570,117 @@ void DataBase::loadBrokersStocksDataToTextEdit(QString login, QTextEdit* textEdi
 
     textEdit->setHtml(html);
 }
+
+void DataBase::loadBrokersOperationsDataToTextEdit(QString login, QTextEdit* textEdit, QString idAccountSearch){
+    QSqlQuery query(db);
+    if (idAccountSearch == "") {
+        query.prepare("SELECT a.id_account, s.stock_type, s.ticker, s.ISIN, s.price "
+                      "FROM Stock s "
+                      "JOIN Account a ON a.id_account = s.id_account "
+                      "JOIN Broker b on a.id_broker = b.id_broker "
+                      "JOIN AISUser ais on ais.id_user = b.id_user "
+                      "WHERE ais.login = :log");
+
+        query.bindValue(":log", login);
+        if (!query.exec()) {
+            qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+            return;
+        }
+    } else {
+        query.prepare("SELECT a.id_account, s.stock_type, s.ticker, s.ISIN, s.price "
+                      "FROM Stock s "
+                      "JOIN Account a ON a.id_account = s.id_account "
+                      "JOIN Broker b on a.id_broker = b.id_broker "
+                      "JOIN AISUser ais on ais.id_user = b.id_user "
+                      "WHERE ais.login = :log AND a.id_account = :idAccountSearch");
+
+        query.bindValue(":log", login);
+        query.bindValue(":idAccountSearch", idAccountSearch);
+
+        if (!query.exec()){
+            qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+            return;
+        }
+    }
+
+    // Начинаем HTML-таблицу с адаптивным дизайном
+    QString html = "<html><head><style>"
+                   "table { width: 100%; border-collapse: collapse; }"
+                   "th { background-color: #f2f2f2; text-align: left; padding: 8px; }"
+                   "td { padding: 6px; border-bottom: 1px solid #ddd; }"
+                   "tr:hover { background-color: #f5f5f5; }"
+                   "</style></head><body>"
+                   "<table>"
+                   "<tr>"
+                   "<th>№счёта владельца</th>"
+                   "<th>Тип ЦБ</th>"
+                   "<th>Тикер</th>"
+                   "<th>ISIN</th>"
+                   "<th>Цена</th>"
+                   "</tr>";
+
+    while (query.next()) {
+        html += QString("<tr>"
+                        "<td>%1</td>"
+                        "<td>%2</td>"
+                        "<td>%3</td>"
+                        "<td>%4</td>"
+                        "<td>%5</td>"
+                        "</tr>")
+                    .arg(query.value(0).toInt())
+                    .arg(query.value(1).toString())
+                    .arg(query.value(2).toString())
+                    .arg(query.value(3).toString())
+                    .arg(query.value(4).toDouble(), 0, 'f', 4);
+    }
+
+    html += "</table></body></html>";
+
+    textEdit->setHtml(html);
+}
+
+void DataBase::deleteBrokerAccount(QString login, QTextEdit* textEdit, QString idAccountToDelete) {
+    QSqlQuery query(db);
+    bool success = false;
+
+    // Сначала проверяем, принадлежит ли счет указанному брокеру
+    query.prepare("SELECT a.id_account FROM Account a "
+                  "JOIN Broker b ON a.id_broker = b.id_broker "
+                  "JOIN AISUser ais ON ais.id_user = b.id_user "
+                  "WHERE ais.login = :log AND a.id_account = :idAccount");
+
+    query.bindValue(":log", login);
+    query.bindValue(":idAccount", idAccountToDelete);
+
+    if (!query.exec()) {
+        qDebug() << "Ошибка проверки счета:" << query.lastError().text();
+        textEdit->setText("Ошибка при проверке счета");
+        return;
+    }
+
+    if (!query.next()) {
+        textEdit->setText("Счет не найден или не принадлежит данному брокеру");
+        return;
+    }
+
+    // Если проверка прошла, удаляем счет
+    query.prepare("DELETE FROM Account WHERE id_account = :idAccount");
+    query.bindValue(":idAccount", idAccountToDelete);
+
+    if (query.exec()) {
+        if (query.numRowsAffected() > 0) {
+            textEdit->setText(QString("Счет №%1 успешно удален").arg(idAccountToDelete));
+            success = true;
+        } else {
+            textEdit->setText("Счет не был удален (возможно, его не существует)");
+        }
+    } else {
+        qDebug() << "Ошибка удаления счета:" << query.lastError().text();
+        textEdit->setText("Ошибка при удалении счета");
+    }
+
+    // Обновляем список счетов после удаления
+    if (success) {
+        loadBrokersAccountDataToTextEdit(login, textEdit);
+    }
+}

@@ -34,13 +34,14 @@ void Broker::on_btnAccountAppend_clicked()
 void Broker::on_btnAccountDel_clicked()
 {
     // уаление выбранного в окне пользователя (№депо выводится)
+    base->deleteBrokerAccount(login, ui->teOutput, ui->edtSearhing->text());
     base->brokerFormUpdate(login, ui->lblAccountTxt, ui->lblCheckTxt);
 }
 
 
 void Broker::on_btnOperations_clicked()
 {
-    //base->loadBrokersOperationsDataToTextEdit(ui->teOutput);
+    base->loadBrokersOperationsDataToTextEdit(login, ui->teOutput);
     outputMode = 1;
 }
 
@@ -49,7 +50,6 @@ void Broker::on_btnAccounts_clicked()
 {
     base->loadBrokersAccountDataToTextEdit(login, ui->teOutput);
     outputMode = 2;
-    base->brokerFormUpdate(login, ui->lblAccountTxt, ui->lblCheckTxt); // изменение количества аккаунтов или добавление чека
 }
 
 
@@ -65,7 +65,7 @@ void Broker::on_btnSearch_clicked()
     // как проверять дисплей?
     switch (outputMode){
         case 1: {  // (operations)
-            //base->loadBrokersOperationsDataToTextEdit(ui->teOutput, ui->edtSearhing->text());
+            base->loadBrokersOperationsDataToTextEdit(login, ui->teOutput, ui->edtSearhing->text());
             break;
         }
         case 2: { // (accounts)

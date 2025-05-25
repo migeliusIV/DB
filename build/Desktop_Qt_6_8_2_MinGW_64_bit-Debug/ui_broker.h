@@ -53,7 +53,6 @@ public:
     QPushButton *btnAccountDel;
     QPushButton *btnAccountAppend;
     QLabel *label_3;
-    QPushButton *pushButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -131,7 +130,7 @@ public:
         frmSearch->setFrameShadow(QFrame::Shadow::Raised);
         lblSearch = new QLabel(frmSearch);
         lblSearch->setObjectName("lblSearch");
-        lblSearch->setGeometry(QRect(0, 0, 101, 24));
+        lblSearch->setGeometry(QRect(0, 0, 111, 24));
         edtSearhing = new QLineEdit(frmSearch);
         edtSearhing->setObjectName("edtSearhing");
         edtSearhing->setGeometry(QRect(104, 0, 191, 24));
@@ -154,9 +153,6 @@ public:
         font.setPointSize(13);
         font.setBold(true);
         label_3->setFont(font);
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(110, 460, 80, 24));
         Broker->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Broker);
         menubar->setObjectName("menubar");
@@ -195,7 +191,6 @@ public:
         btnAccountDel->setText(QCoreApplication::translate("Broker", "\320\227\320\260\320\272\321\200\321\213\321\202\321\214 \321\201\321\207\321\221\321\202", nullptr));
         btnAccountAppend->setText(QCoreApplication::translate("Broker", "\320\227\320\260\321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\270\321\200\320\276\320\262\320\260\321\202\321\214 \321\201\321\207\321\221\321\202", nullptr));
         label_3->setText(QCoreApplication::translate("Broker", "\320\234\320\265\320\275\321\216", nullptr));
-        pushButton->setText(QCoreApplication::translate("Broker", "\320\241\321\202\320\260\321\202\320\270\321\201\321\202\320\270\320\272\320\260 (?)", nullptr));
     } // retranslateUi
 
 };
