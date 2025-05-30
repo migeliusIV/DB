@@ -18,7 +18,6 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -33,8 +32,6 @@ public:
     QLabel *lblLogin;
     QLineEdit *edtLogin;
     QLineEdit *edtPassword;
-    QTextEdit *teResult;
-    QLabel *lbDebug;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -42,12 +39,12 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(563, 434);
+        MainWindow->resize(511, 325);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         frame = new QFrame(centralwidget);
         frame->setObjectName("frame");
-        frame->setGeometry(QRect(150, 120, 231, 121));
+        frame->setGeometry(QRect(130, 60, 231, 121));
         QSizePolicy sizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(1);
@@ -61,7 +58,7 @@ public:
         lblPassword->setGeometry(QRect(20, 50, 51, 20));
         btnEnter = new QPushButton(frame);
         btnEnter->setObjectName("btnEnter");
-        btnEnter->setGeometry(QRect(80, 90, 81, 24));
+        btnEnter->setGeometry(QRect(90, 90, 71, 24));
         lblLogin = new QLabel(frame);
         lblLogin->setObjectName("lblLogin");
         lblLogin->setGeometry(QRect(20, 20, 49, 16));
@@ -71,16 +68,10 @@ public:
         edtPassword = new QLineEdit(frame);
         edtPassword->setObjectName("edtPassword");
         edtPassword->setGeometry(QRect(90, 50, 121, 24));
-        teResult = new QTextEdit(centralwidget);
-        teResult->setObjectName("teResult");
-        teResult->setGeometry(QRect(70, 290, 411, 91));
-        lbDebug = new QLabel(centralwidget);
-        lbDebug->setObjectName("lbDebug");
-        lbDebug->setGeometry(QRect(220, 270, 91, 16));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 563, 21));
+        menubar->setGeometry(QRect(0, 0, 511, 21));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
@@ -97,7 +88,6 @@ public:
         lblPassword->setText(QCoreApplication::translate("MainWindow", "Password", nullptr));
         btnEnter->setText(QCoreApplication::translate("MainWindow", "\320\222\320\276\320\271\321\202\320\270", nullptr));
         lblLogin->setText(QCoreApplication::translate("MainWindow", "Login", nullptr));
-        lbDebug->setText(QCoreApplication::translate("MainWindow", "Debug window", nullptr));
     } // retranslateUi
 
 };

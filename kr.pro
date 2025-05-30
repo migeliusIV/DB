@@ -12,6 +12,8 @@ SOURCES += \
     broker.cpp \
     centrdepwindow.cpp \
     database.cpp \
+    empldirector.cpp \
+    emplhr.cpp \
     emploperator.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -21,6 +23,8 @@ HEADERS += \
     broker.h \
     centrdepwindow.h \
     database.h \
+    empldirector.h \
+    emplhr.h \
     emploperator.h \
     mainwindow.h \
     passwchange.h
@@ -28,6 +32,8 @@ HEADERS += \
 FORMS += \
     broker.ui \
     centrdepwindow.ui \
+    empldirector.ui \
+    emplhr.ui \
     emploperator.ui \
     mainwindow.ui \
     passwchange.ui

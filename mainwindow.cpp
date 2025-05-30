@@ -5,6 +5,8 @@
 #include "centrdepwindow.h"
 #include "broker.h"
 #include "emploperator.h"
+#include "empldirector.h"
+#include "emplhr.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +34,7 @@ MainWindow::MainWindow(DataBase* ptrDB, QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    delete base;
     delete ui;
 }
 
@@ -68,21 +71,15 @@ void MainWindow::on_btnEnter_clicked()
         break;
     }
     case 4: { // hr
-        /*
-        HR *window = new HR();
-        window->HR::setDataBase(getDataBase());
+        EmplHR *window = new EmplHR(getDataBase(), login);
         window->show();
         this->close();
-        */
         break;
     }
     case 5: { // director
-        /*
-        Director *window = new Director();
-        window->Director::setDataBase(getDataBase());
+        EmplDirector *window = new EmplDirector(getDataBase(), login);
         window->show();
         this->close();
-        */
         break;
     }
     case 0: { // not classificated error

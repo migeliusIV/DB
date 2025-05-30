@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>563</width>
-    <height>434</height>
+    <width>511</width>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>120</y>
+      <x>130</x>
+      <y>60</y>
       <width>231</width>
       <height>121</height>
      </rect>
@@ -54,9 +54,9 @@
     <widget class="QPushButton" name="btnEnter">
      <property name="geometry">
       <rect>
-       <x>80</x>
+       <x>90</x>
        <y>90</y>
-       <width>81</width>
+       <width>71</width>
        <height>24</height>
       </rect>
      </property>
@@ -98,36 +98,13 @@
      </property>
     </widget>
    </widget>
-   <widget class="QTextEdit" name="teResult">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>290</y>
-      <width>411</width>
-      <height>91</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lbDebug">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>270</y>
-      <width>91</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Debug window</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>563</width>
+     <width>511</width>
      <height>21</height>
     </rect>
    </property>

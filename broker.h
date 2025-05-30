@@ -19,12 +19,14 @@ private:
     DataBase* base;
 
 public:
+    // my
     QString login;
     int outputMode;
-    explicit Broker(DataBase*, QString, QWidget *parent = nullptr);
-    ~Broker();
     void setDataBase(DataBase* temp){base = temp;}
     DataBase* getDataBase() const {return base;}
+    // class
+    explicit Broker(DataBase*, QString, QWidget *parent = nullptr);
+    ~Broker();
 
 private slots:
     void on_btnUserChanges_clicked();

@@ -1,6 +1,8 @@
 release/broker.o
 release/centrdepwindow.o
 release/database.o
+release/empldirector.o
+release/emplhr.o
 release/emploperator.o
 release/main.o
 release/mainwindow.o
@@ -8,6 +10,8 @@ release/passwchange.o
 release/qrc_qmake_qmake_qm_files.o
 release/moc_broker.o
 release/moc_centrdepwindow.o
+release/moc_empldirector.o
+release/moc_emplhr.o
 release/moc_emploperator.o
 release/moc_mainwindow.o
 release/moc_passwchange.o
