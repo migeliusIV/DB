@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+// my
+#include "centrdepwindow.h"
+#include "broker.h"
+#include "emploperator.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -8,13 +12,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     base = new DataBase();
-    ///*
+    base->getDB().open();
+    /*
     // Отладка
     if(base->getDB().open())
         QMessageBox::information(this, "Успех", "Авторизация прошла успешно!");
     else
         QMessageBox::information(this, "Ошибка", "Авторизация не состоялась");
     //*/
+}
+
+MainWindow::MainWindow(DataBase* ptrDB, QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+    base = ptrDB;
 }
 
 MainWindow::~MainWindow()
@@ -49,12 +62,9 @@ void MainWindow::on_btnEnter_clicked()
         break;
     }
     case 3: { // operator
-        /*
-        Operatortionist *window = new Operatortionist();
-        window->operatortionist::setDataBase(getDataBase());
+        EmplOperator *window = new EmplOperator(getDataBase(), login);
         window->show();
         this->close();
-        */
         break;
     }
     case 4: { // hr

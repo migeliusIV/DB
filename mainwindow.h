@@ -7,10 +7,6 @@
 // extern
 #include "database.h"
 
-// my
-#include "centrdepwindow.h"
-#include "broker.h"
-
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -25,6 +21,7 @@ private:
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    MainWindow(DataBase* , QWidget *parent = nullptr);
     ~MainWindow();
     DataBase* getDataBase() const {return base;}
 

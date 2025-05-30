@@ -36,6 +36,8 @@ public:
     QPushButton *btnStockDelete;
     QPushButton *btnOperationAppend;
     QPushButton *btnReport;
+    QPushButton *btnBack;
+    QLabel *label;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -48,10 +50,12 @@ public:
         centralwidget->setObjectName("centralwidget");
         lblUserType = new QLabel(centralwidget);
         lblUserType->setObjectName("lblUserType");
-        lblUserType->setGeometry(QRect(10, 0, 301, 51));
+        lblUserType->setGeometry(QRect(20, 60, 121, 51));
         QFont font;
-        font.setPointSize(14);
+        font.setPointSize(12);
+        font.setBold(true);
         lblUserType->setFont(font);
+        lblUserType->setAcceptDrops(false);
         teOutput = new QTextEdit(centralwidget);
         teOutput->setObjectName("teOutput");
         teOutput->setGeometry(QRect(190, 91, 601, 401));
@@ -80,13 +84,20 @@ public:
         btnStockAppend->setAutoRepeatDelay(333);
         btnStockDelete = new QPushButton(frame_2);
         btnStockDelete->setObjectName("btnStockDelete");
-        btnStockDelete->setGeometry(QRect(0, 30, 171, 24));
+        btnStockDelete->setGeometry(QRect(0, 23, 171, 24));
         btnOperationAppend = new QPushButton(frame_2);
         btnOperationAppend->setObjectName("btnOperationAppend");
-        btnOperationAppend->setGeometry(QRect(0, 60, 171, 24));
+        btnOperationAppend->setGeometry(QRect(0, 46, 171, 24));
         btnReport = new QPushButton(frame_2);
         btnReport->setObjectName("btnReport");
-        btnReport->setGeometry(QRect(0, 90, 171, 24));
+        btnReport->setGeometry(QRect(0, 69, 171, 24));
+        btnBack = new QPushButton(centralwidget);
+        btnBack->setObjectName("btnBack");
+        btnBack->setGeometry(QRect(0, 0, 51, 21));
+        label = new QLabel(centralwidget);
+        label->setObjectName("label");
+        label->setGeometry(QRect(60, 100, 111, 20));
+        label->setFont(font);
         centrdepwindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(centrdepwindow);
         menubar->setObjectName("menubar");
@@ -104,13 +115,15 @@ public:
     void retranslateUi(QMainWindow *centrdepwindow)
     {
         centrdepwindow->setWindowTitle(QCoreApplication::translate("centrdepwindow", "MainWindow", nullptr));
-        lblUserType->setText(QCoreApplication::translate("centrdepwindow", "\320\246\320\265\320\275\321\202\321\200\320\260\320\273\321\214\320\275\321\213\320\271 \320\264\320\265\320\277\320\276\320\267\320\270\321\202\320\260\321\200\320\270\320\271", nullptr));
+        lblUserType->setText(QCoreApplication::translate("centrdepwindow", "\320\246\320\265\320\275\321\202\321\200\320\260\320\273\321\214\320\275\321\213\320\271", nullptr));
         btnStocks->setText(QCoreApplication::translate("centrdepwindow", "\320\220\320\272\321\206\320\270\320\270", nullptr));
         btnOperations->setText(QCoreApplication::translate("centrdepwindow", "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\270", nullptr));
         btnStockAppend->setText(QCoreApplication::translate("centrdepwindow", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\246\320\221", nullptr));
         btnStockDelete->setText(QCoreApplication::translate("centrdepwindow", "\320\222\321\213\320\262\320\265\321\201\321\202\320\270 \320\246\320\221", nullptr));
         btnOperationAppend->setText(QCoreApplication::translate("centrdepwindow", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\276\320\277\320\265\321\200\320\260\321\206\320\270\321\216", nullptr));
         btnReport->setText(QCoreApplication::translate("centrdepwindow", "\320\237\321\200\320\276\321\201\320\274\320\276\321\202\321\200 \320\276\321\202\321\207\321\221\321\202\320\276\320\262", nullptr));
+        btnBack->setText(QCoreApplication::translate("centrdepwindow", "\320\235\320\260\320\267\320\260\320\264", nullptr));
+        label->setText(QCoreApplication::translate("centrdepwindow", " \320\264\320\265\320\277\320\276\320\267\320\270\321\202\320\260\321\200\320\270\320\271", nullptr));
     } // retranslateUi
 
 };

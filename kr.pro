@@ -12,19 +12,25 @@ SOURCES += \
     broker.cpp \
     centrdepwindow.cpp \
     database.cpp \
+    emploperator.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    passwchange.cpp
 
 HEADERS += \
     broker.h \
     centrdepwindow.h \
     database.h \
-    mainwindow.h
+    emploperator.h \
+    mainwindow.h \
+    passwchange.h
 
 FORMS += \
     broker.ui \
     centrdepwindow.ui \
-    mainwindow.ui
+    emploperator.ui \
+    mainwindow.ui \
+    passwchange.ui
 
 TRANSLATIONS += \
     kr_ru_RU.ts

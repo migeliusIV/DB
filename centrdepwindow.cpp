@@ -1,6 +1,9 @@
 #include "centrdepwindow.h"
 #include "./ui_centrdepwindow.h"
 
+// my
+#include "mainwindow.h"
+
 centrdepwindow::centrdepwindow(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::centrdepwindow)
@@ -72,5 +75,13 @@ void centrdepwindow::on_btnStockDelete_clicked()
 void centrdepwindow::on_btnReport_clicked()
 {
     // открывает яндекс-диск с папкой отчётов для ЦД
+}
+
+
+void centrdepwindow::on_btnBack_clicked()
+{
+    MainWindow *window = new MainWindow(getDataBase());
+    window->show();
+    this->close();
 }
 

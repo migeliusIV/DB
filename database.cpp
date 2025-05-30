@@ -46,7 +46,7 @@ int DataBase::SelectAISUser(QString login, QString password){
                 return 3;
             else if (userType == "hr")
                 return 4;
-            else if (userType == "diretor")
+            else if (userType == "director")
                 return 5;
         } else {
             return -2; // неправильный пароль
@@ -684,3 +684,5 @@ void DataBase::deleteBrokerAccount(QString login, QTextEdit* textEdit, QString i
         loadBrokersAccountDataToTextEdit(login, textEdit);
     }
 }
+
+//------debug-----

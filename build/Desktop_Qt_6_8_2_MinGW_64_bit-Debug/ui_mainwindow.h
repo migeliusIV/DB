@@ -42,12 +42,12 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        MainWindow->resize(563, 434);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         frame = new QFrame(centralwidget);
         frame->setObjectName("frame");
-        frame->setGeometry(QRect(280, 180, 231, 131));
+        frame->setGeometry(QRect(150, 120, 231, 121));
         QSizePolicy sizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(1);
@@ -61,7 +61,7 @@ public:
         lblPassword->setGeometry(QRect(20, 50, 51, 20));
         btnEnter = new QPushButton(frame);
         btnEnter->setObjectName("btnEnter");
-        btnEnter->setGeometry(QRect(20, 90, 81, 24));
+        btnEnter->setGeometry(QRect(80, 90, 81, 24));
         lblLogin = new QLabel(frame);
         lblLogin->setObjectName("lblLogin");
         lblLogin->setGeometry(QRect(20, 20, 49, 16));
@@ -73,14 +73,14 @@ public:
         edtPassword->setGeometry(QRect(90, 50, 121, 24));
         teResult = new QTextEdit(centralwidget);
         teResult->setObjectName("teResult");
-        teResult->setGeometry(QRect(200, 470, 411, 91));
+        teResult->setGeometry(QRect(70, 290, 411, 91));
         lbDebug = new QLabel(centralwidget);
         lbDebug->setObjectName("lbDebug");
-        lbDebug->setGeometry(QRect(360, 450, 91, 16));
+        lbDebug->setGeometry(QRect(220, 270, 91, 16));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 21));
+        menubar->setGeometry(QRect(0, 0, 563, 21));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");

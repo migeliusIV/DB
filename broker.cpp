@@ -1,6 +1,10 @@
 #include "broker.h"
 #include "./ui_broker.h"
 
+// Необходимость
+#include "mainwindow.h"
+#include "passwchange.h"
+
 Broker::Broker(DataBase* temp, QString strLogin, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Broker)
@@ -20,7 +24,9 @@ Broker::~Broker()
 
 void Broker::on_btnUserChanges_clicked()
 {
-    // форма для смены пароля
+    PasswChange *window = new PasswChange(getDataBase(), this);
+    window->show();
+    //this->close();
 }
 
 
@@ -78,3 +84,11 @@ void Broker::on_btnSearch_clicked()
         }
     }
 }
+
+void Broker::on_btnBack_clicked()
+{
+    MainWindow *window = new MainWindow(getDataBase());
+    window->show();
+    this->close();
+}
+

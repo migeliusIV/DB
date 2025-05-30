@@ -9,6 +9,9 @@
 #include <QTextEdit>
 #include <QDebug>
 #include <QLabel>
+// debug
+#include <QTableWidget>
+#include <QTableWidgetItem>
 // Для импорта-экспорта данных
 #include <QFile>
 #include <QTextStream>

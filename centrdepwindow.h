@@ -33,6 +33,8 @@ private slots:
     void on_btnStockDelete_clicked();
     void on_btnReport_clicked();
 
+    void on_btnBack_clicked();
+
 public slots:
 signals:
 };

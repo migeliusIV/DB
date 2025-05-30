@@ -25,6 +25,7 @@ public:
     ~Broker();
     void setDataBase(DataBase* temp){base = temp;}
     DataBase* getDataBase() const {return base;}
+
 private slots:
     void on_btnUserChanges_clicked();
     void on_btnAccountAppend_clicked();
@@ -33,6 +34,7 @@ private slots:
     void on_btnAccounts_clicked();
     void on_btnSearch_clicked();
     void on_btnStocks_clicked();
+    void on_btnBack_clicked();
 };
 
 #endif // BROKER_H

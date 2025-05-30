@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>563</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>180</y>
+      <x>150</x>
+      <y>120</y>
       <width>231</width>
-      <height>131</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -54,7 +54,7 @@
     <widget class="QPushButton" name="btnEnter">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>80</x>
        <y>90</y>
        <width>81</width>
        <height>24</height>
@@ -101,8 +101,8 @@
    <widget class="QTextEdit" name="teResult">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>470</y>
+      <x>70</x>
+      <y>290</y>
       <width>411</width>
       <height>91</height>
      </rect>
@@ -111,8 +111,8 @@
    <widget class="QLabel" name="lbDebug">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>450</y>
+      <x>220</x>
+      <y>270</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -127,7 +127,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>563</width>
      <height>21</height>
     </rect>
    </property>
