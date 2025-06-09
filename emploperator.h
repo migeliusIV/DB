@@ -28,7 +28,13 @@ public:
 private slots:
     void on_btnUserChanges_clicked();
 
-    void on_btnBack_clicked();
+    void on_btnBack_2_clicked();
+    void on_btnDealsAll_clicked();
+    void on_btnDealsNew_clicked();
+    void on_btnDealsReport_clicked();
+    void on_btnDealCheck_clicked();
+    void on_btnDealReject_clicked();
+    void on_btnDealAccept_clicked();
 };
 
 #endif // EMPLOPERATOR_H

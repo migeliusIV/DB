@@ -36,16 +36,6 @@
      <string>Центральный</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="teOutput">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>91</y>
-      <width>601</width>
-      <height>401</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
@@ -194,6 +184,16 @@
     </property>
     <property name="text">
      <string> депозитарий</string>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="tblOutput">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>90</y>
+      <width>601</width>
+      <height>451</height>
+     </rect>
     </property>
    </widget>
   </widget>

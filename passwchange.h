@@ -16,7 +16,8 @@ private:
     DataBase* base;
 
 public:
-    explicit PasswChange(DataBase*, QWidget *parent = nullptr);
+    QString login;
+    explicit PasswChange(DataBase*, QString, QWidget *parent = nullptr);
     ~PasswChange();
     DataBase* getDataBase() const {return base;}
 

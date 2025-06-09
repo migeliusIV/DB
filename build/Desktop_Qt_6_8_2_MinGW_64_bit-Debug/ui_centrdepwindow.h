@@ -12,12 +12,13 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -27,7 +28,6 @@ class Ui_centrdepwindow
 public:
     QWidget *centralwidget;
     QLabel *lblUserType;
-    QTextEdit *teOutput;
     QFrame *frame;
     QPushButton *btnStocks;
     QPushButton *btnOperations;
@@ -38,6 +38,7 @@ public:
     QPushButton *btnReport;
     QPushButton *btnBack;
     QLabel *label;
+    QTableWidget *tblOutput;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -56,9 +57,6 @@ public:
         font.setBold(true);
         lblUserType->setFont(font);
         lblUserType->setAcceptDrops(false);
-        teOutput = new QTextEdit(centralwidget);
-        teOutput->setObjectName("teOutput");
-        teOutput->setGeometry(QRect(190, 91, 601, 401));
         frame = new QFrame(centralwidget);
         frame->setObjectName("frame");
         frame->setGeometry(QRect(190, 60, 171, 31));
@@ -93,11 +91,14 @@ public:
         btnReport->setGeometry(QRect(0, 69, 171, 24));
         btnBack = new QPushButton(centralwidget);
         btnBack->setObjectName("btnBack");
-        btnBack->setGeometry(QRect(0, 0, 51, 21));
+        btnBack->setGeometry(QRect(0, 0, 81, 21));
         label = new QLabel(centralwidget);
         label->setObjectName("label");
         label->setGeometry(QRect(60, 100, 111, 20));
         label->setFont(font);
+        tblOutput = new QTableWidget(centralwidget);
+        tblOutput->setObjectName("tblOutput");
+        tblOutput->setGeometry(QRect(190, 90, 601, 451));
         centrdepwindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(centrdepwindow);
         menubar->setObjectName("menubar");

@@ -11,15 +11,15 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QFontComboBox>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -45,16 +45,16 @@ public:
     QPushButton *btnAccountAppend;
     QPushButton *btnReports;
     QFrame *frmOutput;
-    QTextEdit *teOutput;
     QPushButton *btnOperations;
     QPushButton *btnAccounts;
     QPushButton *btnStocks;
+    QTableWidget *tblOutput;
     QFrame *frmSearch;
     QLabel *lblSearch;
-    QLineEdit *edtSearhing;
     QPushButton *btnSearch;
+    QComboBox *comboBox;
     QPushButton *btnBack;
-    QFontComboBox *fontComboBox;
+    QPushButton *pushButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -67,70 +67,69 @@ public:
         centralwidget->setObjectName("centralwidget");
         frmInfo = new QFrame(centralwidget);
         frmInfo->setObjectName("frmInfo");
-        frmInfo->setGeometry(QRect(20, 50, 231, 331));
+        frmInfo->setGeometry(QRect(0, 50, 201, 331));
         frmInfo->setFrameShape(QFrame::Shape::StyledPanel);
         frmInfo->setFrameShadow(QFrame::Shadow::Raised);
         lblCompanyName = new QLabel(frmInfo);
         lblCompanyName->setObjectName("lblCompanyName");
-        lblCompanyName->setGeometry(QRect(0, 32, 61, 16));
+        lblCompanyName->setGeometry(QRect(10, 32, 61, 16));
         lnlINN = new QLabel(frmInfo);
         lnlINN->setObjectName("lnlINN");
-        lnlINN->setGeometry(QRect(0, 52, 49, 16));
+        lnlINN->setGeometry(QRect(10, 52, 49, 16));
         lblINNTxt = new QLabel(frmInfo);
         lblINNTxt->setObjectName("lblINNTxt");
-        lblINNTxt->setGeometry(QRect(60, 52, 131, 16));
+        lblINNTxt->setGeometry(QRect(70, 52, 131, 16));
         lblCompanyNameTxt = new QLabel(frmInfo);
         lblCompanyNameTxt->setObjectName("lblCompanyNameTxt");
-        lblCompanyNameTxt->setGeometry(QRect(60, 32, 131, 16));
+        lblCompanyNameTxt->setGeometry(QRect(70, 32, 131, 16));
         btnUserChanges = new QPushButton(frmInfo);
         btnUserChanges->setObjectName("btnUserChanges");
-        btnUserChanges->setGeometry(QRect(0, 72, 111, 24));
+        btnUserChanges->setGeometry(QRect(10, 72, 111, 24));
         lblUserInfo = new QLabel(frmInfo);
         lblUserInfo->setObjectName("lblUserInfo");
-        lblUserInfo->setGeometry(QRect(0, 10, 141, 16));
+        lblUserInfo->setGeometry(QRect(10, 10, 141, 16));
         QFont font;
         font.setPointSize(11);
         font.setBold(true);
         lblUserInfo->setFont(font);
         lblAppendix = new QLabel(frmInfo);
         lblAppendix->setObjectName("lblAppendix");
-        lblAppendix->setGeometry(QRect(0, 118, 121, 16));
+        lblAppendix->setGeometry(QRect(10, 118, 121, 16));
         lblAppendix->setFont(font);
         lblAccounts = new QLabel(frmInfo);
         lblAccounts->setObjectName("lblAccounts");
-        lblAccounts->setGeometry(QRect(0, 138, 101, 20));
+        lblAccounts->setGeometry(QRect(10, 138, 101, 20));
         lblAccountTxt = new QLabel(frmInfo);
         lblAccountTxt->setObjectName("lblAccountTxt");
-        lblAccountTxt->setGeometry(QRect(80, 140, 49, 16));
+        lblAccountTxt->setGeometry(QRect(110, 140, 49, 16));
         lblAccountTxt->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
         lblCheckTxt = new QLabel(frmInfo);
         lblCheckTxt->setObjectName("lblCheckTxt");
-        lblCheckTxt->setGeometry(QRect(80, 158, 49, 16));
+        lblCheckTxt->setEnabled(false);
+        lblCheckTxt->setGeometry(QRect(110, 158, 49, 16));
         lblCheckTxt->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
         lblCkecks = new QLabel(frmInfo);
         lblCkecks->setObjectName("lblCkecks");
-        lblCkecks->setGeometry(QRect(0, 156, 101, 20));
+        lblCkecks->setEnabled(false);
+        lblCkecks->setGeometry(QRect(10, 156, 101, 20));
         label_3 = new QLabel(frmInfo);
         label_3->setObjectName("label_3");
-        label_3->setGeometry(QRect(0, 207, 51, 21));
+        label_3->setGeometry(QRect(10, 207, 51, 21));
         label_3->setFont(font);
         btnAccountDel = new QPushButton(frmInfo);
         btnAccountDel->setObjectName("btnAccountDel");
-        btnAccountDel->setGeometry(QRect(0, 260, 171, 24));
+        btnAccountDel->setGeometry(QRect(10, 260, 171, 24));
         btnAccountAppend = new QPushButton(frmInfo);
         btnAccountAppend->setObjectName("btnAccountAppend");
-        btnAccountAppend->setGeometry(QRect(0, 237, 171, 24));
+        btnAccountAppend->setGeometry(QRect(10, 237, 171, 24));
         btnReports = new QPushButton(frmInfo);
         btnReports->setObjectName("btnReports");
-        btnReports->setGeometry(QRect(0, 283, 171, 24));
+        btnReports->setGeometry(QRect(10, 283, 171, 24));
         frmOutput = new QFrame(centralwidget);
         frmOutput->setObjectName("frmOutput");
-        frmOutput->setGeometry(QRect(320, 20, 471, 501));
+        frmOutput->setGeometry(QRect(200, 20, 591, 501));
         frmOutput->setFrameShape(QFrame::Shape::StyledPanel);
         frmOutput->setFrameShadow(QFrame::Shadow::Raised);
-        teOutput = new QTextEdit(frmOutput);
-        teOutput->setObjectName("teOutput");
-        teOutput->setGeometry(QRect(0, 23, 471, 481));
         btnOperations = new QPushButton(frmOutput);
         btnOperations->setObjectName("btnOperations");
         btnOperations->setGeometry(QRect(0, 0, 80, 24));
@@ -140,26 +139,30 @@ public:
         btnStocks = new QPushButton(frmOutput);
         btnStocks->setObjectName("btnStocks");
         btnStocks->setGeometry(QRect(158, 0, 101, 24));
+        tblOutput = new QTableWidget(frmOutput);
+        tblOutput->setObjectName("tblOutput");
+        tblOutput->setGeometry(QRect(0, 20, 591, 481));
         frmSearch = new QFrame(centralwidget);
         frmSearch->setObjectName("frmSearch");
-        frmSearch->setGeometry(QRect(320, 521, 381, 31));
+        frmSearch->setGeometry(QRect(200, 520, 371, 31));
         frmSearch->setFrameShape(QFrame::Shape::StyledPanel);
         frmSearch->setFrameShadow(QFrame::Shadow::Raised);
         lblSearch = new QLabel(frmSearch);
         lblSearch->setObjectName("lblSearch");
-        lblSearch->setGeometry(QRect(0, 0, 111, 24));
-        edtSearhing = new QLineEdit(frmSearch);
-        edtSearhing->setObjectName("edtSearhing");
-        edtSearhing->setGeometry(QRect(104, 0, 191, 24));
+        lblSearch->setGeometry(QRect(0, 0, 191, 24));
         btnSearch = new QPushButton(frmSearch);
         btnSearch->setObjectName("btnSearch");
-        btnSearch->setGeometry(QRect(294, -1, 80, 26));
+        btnSearch->setGeometry(QRect(280, -1, 80, 26));
+        comboBox = new QComboBox(frmSearch);
+        comboBox->setObjectName("comboBox");
+        comboBox->setGeometry(QRect(180, 0, 101, 24));
+        comboBox->setEditable(true);
         btnBack = new QPushButton(centralwidget);
         btnBack->setObjectName("btnBack");
         btnBack->setGeometry(QRect(0, 0, 81, 21));
-        fontComboBox = new QFontComboBox(centralwidget);
-        fontComboBox->setObjectName("fontComboBox");
-        fontComboBox->setGeometry(QRect(710, 530, 81, 21));
+        pushButton = new QPushButton(centralwidget);
+        pushButton->setObjectName("pushButton");
+        pushButton->setGeometry(QRect(30, 410, 111, 24));
         Broker->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Broker);
         menubar->setObjectName("menubar");
@@ -195,9 +198,10 @@ public:
         btnOperations->setText(QCoreApplication::translate("Broker", "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\270", nullptr));
         btnAccounts->setText(QCoreApplication::translate("Broker", "\320\241\321\207\320\265\321\202\320\260", nullptr));
         btnStocks->setText(QCoreApplication::translate("Broker", "\320\246\320\265\320\275\320\275\321\213\320\265 \320\261\321\203\320\274\320\260\320\263\320\270", nullptr));
-        lblSearch->setText(QCoreApplication::translate("Broker", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \342\204\226\321\201\321\207\321\221\321\202\320\260:", nullptr));
+        lblSearch->setText(QCoreApplication::translate("Broker", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\270\320\275\320\262\320\265\321\201\321\202\320\276\321\200\320\260 (\320\277\320\276 \320\230\320\235\320\235):", nullptr));
         btnSearch->setText(QCoreApplication::translate("Broker", "\320\237\320\276\320\270\321\201\320\272", nullptr));
         btnBack->setText(QCoreApplication::translate("Broker", "\320\235\320\260\320\267\320\260\320\264", nullptr));
+        pushButton->setText(QCoreApplication::translate("Broker", "\320\236\320\261\320\275\320\276\320\262\320\270\321\202\321\214 \320\261\320\260\320\273\320\260\320\275\321\201", nullptr));
     } // retranslateUi
 
 };

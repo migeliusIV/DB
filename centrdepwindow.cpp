@@ -9,13 +9,6 @@ centrdepwindow::centrdepwindow(QWidget *parent):
     ui(new Ui::centrdepwindow)
 {
     ui->setupUi(this);
-    /*
-    // Отладка
-    if(base->getDB().open())
-        QMessageBox::information(this, "Успех", "Авторизация прошла успешно!");
-    else
-        QMessageBox::information(this, "Ошибка", "Авторизация не состоялась");
-    */
 }
 
 centrdepwindow::~centrdepwindow()
@@ -27,13 +20,13 @@ centrdepwindow::~centrdepwindow()
 
 void centrdepwindow::on_btnStocks_clicked()
 {
-    base->loadStockDataToTextEdit(ui->teOutput);
+    base->loadStockDataToTable(ui->tblOutput);
 }
 
 
 void centrdepwindow::on_btnOperations_clicked()
 {
-    base->loadOperationsDataToTextEdit(ui->teOutput);
+    base->loadOperationsDataToTable(ui->tblOutput);
 }
 
 void centrdepwindow::on_btnStockAppend_clicked()

@@ -9,6 +9,8 @@
 #include <QTextEdit>
 #include <QDebug>
 #include <QLabel>
+#include <QHeaderView>
+#include <QMainWindow>
 // debug
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -20,30 +22,34 @@ class DataBase
 {
 private:
     QSqlDatabase db;
-
+    QMetaObject::Connection tableSelectionConnection;
 public:
     DataBase();
     ~DataBase();
     QSqlDatabase getDB() const {return db;}
     //MainWindow
     int SelectAISUser(QString, QString);
-    void loadStockDataToTextEdit(QTextEdit*);
     //Central depository
-    void loadOperationsDataToTextEdit(QTextEdit*);
+    void loadStockDataToTable(QTableWidget*);
+    void loadOperationsDataToTable(QTableWidget*);
     bool exportReleasedStocksToCSV(const QString&);
     bool importReleasedStocksFromCSV(const QString&);
     bool importOperationsFromCSV(const QString&);
     //Broker
-    void loadBrokersAccountDataToTextEdit(QString, QTextEdit*, QString = "");     // вывод связанных счетов
-    void loadBrokersOperationsDataToTextEdit(QString,QTextEdit*, QString = "");   // вывод связанных операций
-    void loadBrokersStocksDataToTextEdit(QString, QTextEdit*, QString = "");      // вывод связанных ценных бумаг
+    void loadBrokersOperationsDataToTable(QString, QTableWidget*, QString = "");   // вывод связанных операций
+    void loadBrokersAccountDataToTable(QString, QTableWidget*, QString = "");     // вывод связанных счетов
+    void loadBrokersStocksDataToTable(QString, QTableWidget*, QString = "");      // вывод связанных ценных бумаг
     void brokerFormInit(QString, QLabel*, QLabel*, QLabel*, QLabel*);   // основная инфа
     void brokerFormUpdate(QString, QLabel*, QLabel* );                  // обновление вспомогательных данных
-    void deleteBrokerAccount(QString, QTextEdit*, QString);             // удаление счёта
-
+    QString deleteBrokerAccount(QString, QTableWidget*, QString);             // удаление счёта
+    void brokerFillingCmb(QString, QComboBox*);
     //Operator
+    void loadDealsRequests(QTableWidget*, int = 0);
+    bool checkSufficientStocksForOperation(int);
     //HR
     //Director
+    //Password window
+    void setPassword(QString, QString);
 };
 
 #endif // DATABASE_H

@@ -22,9 +22,9 @@ QT_BEGIN_NAMESPACE
 class Ui_PasswChange
 {
 public:
-    QLabel *label_2;
-    QLineEdit *lineEdit;
-    QLineEdit *lineEdit_2;
+    QLabel *lblLogin;
+    QLineEdit *edtNewPassw;
+    QLineEdit *edtNewPasswConfirm;
     QLabel *label_3;
     QLabel *label_4;
     QDialogButtonBox *buttonBox_2;
@@ -35,18 +35,19 @@ public:
         if (PasswChange->objectName().isEmpty())
             PasswChange->setObjectName("PasswChange");
         PasswChange->resize(400, 253);
-        label_2 = new QLabel(PasswChange);
-        label_2->setObjectName("label_2");
-        label_2->setGeometry(QRect(160, 30, 181, 21));
+        lblLogin = new QLabel(PasswChange);
+        lblLogin->setObjectName("lblLogin");
+        lblLogin->setGeometry(QRect(160, 30, 181, 21));
         QFont font;
         font.setPointSize(11);
-        label_2->setFont(font);
-        lineEdit = new QLineEdit(PasswChange);
-        lineEdit->setObjectName("lineEdit");
-        lineEdit->setGeometry(QRect(100, 90, 191, 24));
-        lineEdit_2 = new QLineEdit(PasswChange);
-        lineEdit_2->setObjectName("lineEdit_2");
-        lineEdit_2->setGeometry(QRect(100, 160, 191, 24));
+        lblLogin->setFont(font);
+        edtNewPassw = new QLineEdit(PasswChange);
+        edtNewPassw->setObjectName("edtNewPassw");
+        edtNewPassw->setGeometry(QRect(100, 90, 191, 24));
+        edtNewPassw->setInputMethodHints(Qt::InputMethodHint::ImhHiddenText);
+        edtNewPasswConfirm = new QLineEdit(PasswChange);
+        edtNewPasswConfirm->setObjectName("edtNewPasswConfirm");
+        edtNewPasswConfirm->setGeometry(QRect(100, 160, 191, 24));
         label_3 = new QLabel(PasswChange);
         label_3->setObjectName("label_3");
         label_3->setGeometry(QRect(100, 70, 131, 16));
@@ -75,7 +76,7 @@ public:
     void retranslateUi(QDialog *PasswChange)
     {
         PasswChange->setWindowTitle(QCoreApplication::translate("PasswChange", "Dialog", nullptr));
-        label_2->setText(QCoreApplication::translate("PasswChange", "text", nullptr));
+        lblLogin->setText(QCoreApplication::translate("PasswChange", "text", nullptr));
         label_3->setText(QCoreApplication::translate("PasswChange", "\320\222\320\262\320\265\320\264\320\270\321\202\320\265 \320\275\320\276\320\262\321\213\320\271 \320\277\320\260\321\200\320\276\320\273\321\214", nullptr));
         label_4->setText(QCoreApplication::translate("PasswChange", "\320\237\320\276\320\262\321\202\320\276\321\200\320\270\321\202\320\265 \320\275\320\276\320\262\321\213\320\271 \320\277\320\260\321\200\320\276\320\273\321\214", nullptr));
         label->setText(QCoreApplication::translate("PasswChange", "\320\233\320\276\320\263\320\270\320\275:", nullptr));

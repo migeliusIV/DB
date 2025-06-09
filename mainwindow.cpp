@@ -12,24 +12,23 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    // start
     base = new DataBase();
     base->getDB().open();
-    /*
-    // Отладка
-    if(base->getDB().open())
-        QMessageBox::information(this, "Успех", "Авторизация прошла успешно!");
-    else
-        QMessageBox::information(this, "Ошибка", "Авторизация не состоялась");
-    //*/
+    // regular
+    ui->setupUi(this);
+    ui->edtPassword->setEchoMode(QLineEdit::Password);
 }
 
 MainWindow::MainWindow(DataBase* ptrDB, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    // re-open
     base = ptrDB;
+    // regular
+    ui->setupUi(this);
+    ui->edtPassword->setEchoMode(QLineEdit::Password);
 }
 
 MainWindow::~MainWindow()

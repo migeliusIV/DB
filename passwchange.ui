@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="lblLogin">
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -31,7 +31,7 @@
     <string>text</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="edtNewPassw">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -40,8 +40,11 @@
      <height>24</height>
     </rect>
    </property>
+   <property name="inputMethodHints">
+    <set>Qt::InputMethodHint::ImhHiddenText</set>
+   </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="edtNewPasswConfirm">
    <property name="geometry">
     <rect>
      <x>100</x>
