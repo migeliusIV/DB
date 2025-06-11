@@ -13,7 +13,9 @@ Broker::Broker(DataBase* temp, QString strLogin, QWidget *parent)
     login = strLogin;
     setDataBase(temp);
     // visual
-    base->brokerFillingCmb(login, ui->comboBox);
+    ui->frmAccAppend->hide();
+    ui->frmBudget->hide();
+    base->InnFillingCmb(ui->comboBox, login);
     base->brokerFormInit(login, ui->lblCompanyNameTxt, ui->lblINNTxt, ui->lblAccountTxt, ui->lblCheckTxt);  // statistics
     QTableWidget* operationsTable = ui->tblOutput;                                                          // Box field relative
     QComboBox* operationsComboBox = ui->comboBox;
@@ -52,8 +54,56 @@ void Broker::on_btnUserChanges_clicked()
 
 void Broker::on_btnAccountAppend_clicked()
 {
-    // форма для регистрации счёта
-    base->brokerFormUpdate(login, ui->lblAccountTxt, ui->lblCheckTxt);
+    if (!ui->frmAccAppend->isVisible()) {
+        ui->frmBudget->hide();
+        ui->frmAccAppend->show();
+    } else
+        ui->frmAccAppend->hide();// форма для регистрации счёта    
+}
+
+void Broker::on_btnBudgetOper_clicked()
+{
+    if (!ui->frmBudget->isVisible()) {
+        ui->frmAccAppend->hide();
+        ui->frmBudget->show();
+    } else
+        ui->frmBudget->hide();// форма для регистрации счёта
+}
+
+void Broker::on_btnAccept_clicked()
+{
+    QString FIO = ui->edtFIO->text();
+    QString INN = ui->edtINNInv->text();
+    if (INN.length() != 12){
+        ui->edtFIO->setStyleSheet("QLineEdit { color: black; }");
+        ui->edtINNInv->setStyleSheet("QLineEdit { color: red; }");
+        QMessageBox::warning(this, "Ошибка", "Введён неверный ИНН!");
+        return;
+    } else if (INN == "000111222333") {
+        ui->edtFIO->setStyleSheet("QLineEdit { color: black; }");
+        ui->edtINNInv->setStyleSheet("QLineEdit { color: red; }");
+        QMessageBox::warning(this, "Ошибка", "Укажите действительный ИНН!");
+        return;
+    } else if (FIO == "Иванов C.C."){
+        ui->edtFIO->setStyleSheet("QLineEdit { color: red; }");
+        ui->edtINNInv->setStyleSheet("QLineEdit { color: black; }");
+        QMessageBox::warning(this, "Ошибка", "Укажите действительные ФИО инвестора!");
+        return;
+    } else {
+        // Визуальные эффекты
+        ui->edtFIO->setStyleSheet("QLineEdit { color: black; }");
+        ui->edtINNInv->setStyleSheet("QLineEdit { color: black; }");
+        // Обновление данных
+        QString funcRes = base->appendBrokerAccount(login, INN, FIO);
+        if (funcRes == "Успешно"){
+            base->loadBrokersAccountDataToTable(login, ui->tblOutput);
+            base->brokerFormUpdate(login, ui->lblAccountTxt, ui->lblCheckTxt);
+            base->InnFillingCmb(ui->comboBox, login);
+        } else {
+            QMessageBox::warning(this, "Ошибка", funcRes);
+        }
+    }
+    return;
 }
 
 
@@ -75,13 +125,13 @@ void Broker::on_btnAccountDel_clicked()
 
         // Если пользователь подтвердил удаление
         if (reply == QMessageBox::Yes) {
-            QString funcRes = base->deleteBrokerAccount(login, ui->tblOutput, depoNum);
+            QString funcRes = base->deleteBrokerAccount(login, depoNum);
             // Удаление выбранного счета
             if (funcRes == "Успешно") {
                 // Appendix
                 base->loadBrokersAccountDataToTable(login, ui->tblOutput);
                 base->brokerFormUpdate(login, ui->lblAccountTxt, ui->lblCheckTxt);
-                base->brokerFillingCmb(login, ui->comboBox);
+                base->InnFillingCmb(ui->comboBox, login);
                 // Опционально: показать сообщение об успешном удалении
                 //QMessageBox::information(this, "Успешно", "Счет был удален.");
             } else {
@@ -139,5 +189,31 @@ void Broker::on_btnBack_clicked()
     MainWindow *window = new MainWindow(getDataBase());
     window->show();
     this->close();
+}
+
+void Broker::on_btnReports_clicked()
+{
+    QString dirPath = "C:/AIS_FS/brokers/" + login;
+
+    // Проверяем существование директории
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        QMessageBox::warning(this, "Ошибка", "Директория с отчетами не найдена!");
+        return;
+    }
+
+    // Открываем диалог выбора файла
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "Выберите отчет для просмотра",
+        dirPath,
+        "Все файлы (*.*);;PDF (*.pdf);;Excel (*.xlsx *.xls);;Текстовые (*.txt)"
+        );
+
+    // Если файл выбран
+    if (!filePath.isEmpty()) {
+        // Открываем файл в ассоциированном приложении
+        QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
+    }
 }
 

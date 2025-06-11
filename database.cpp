@@ -58,15 +58,18 @@ int DataBase::SelectAISUser(QString login, QString password){
 //-------Central depository----------
 void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
 {
+    if (tableSelectionConnection != nullptr)
+        QObject::disconnect(tableSelectionConnection);
+
     if (!tableWidget) return;
 
     // Очистка и настройка таблицы
     tableWidget->clear();
     tableWidget->setRowCount(0);
-    tableWidget->setColumnCount(6);
+    tableWidget->setColumnCount(5);
 
     // Установка заголовков
-    QStringList headers = {"Price", "Ticker", "ISIN", "Type", "Account", "Status"};
+    QStringList headers = {"Тип ЦБ", "Тикер", "ISIN", "Цена", "Статус"};
     tableWidget->setHorizontalHeaderLabels(headers);
 
     // Настройка внешнего вида
@@ -81,7 +84,7 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
 
     // Выполнение запроса
     QSqlQuery query(db);
-    if (!query.exec("SELECT price, ticker, ISIN, stock_type, id_account, st_status "
+    if (!query.exec("SELECT stock_type, ticker, ISIN, price, st_status "
                     "FROM Stock s "
                     "WHERE s.st_status = 'получена' OR s.st_status = 'отдана' ")) {
         qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
@@ -93,28 +96,27 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
         int row = tableWidget->rowCount();
         tableWidget->insertRow(row);
 
+        tableWidget->setItem(row, 0, new QTableWidgetItem(query.value("stock_type").toString()));   // Type
+        tableWidget->setItem(row, 1, new QTableWidgetItem(query.value("ticker").toString()));       // Ticker
+        tableWidget->setItem(row, 2, new QTableWidgetItem(query.value("ISIN").toString()));         // ISIN
         // Price (с форматированием)
         QTableWidgetItem *priceItem = new QTableWidgetItem();
         priceItem->setData(Qt::DisplayRole, query.value("price").toDouble());
         priceItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        tableWidget->setItem(row, 0, priceItem);
-        tableWidget->setItem(row, 1, new QTableWidgetItem(query.value("ticker").toString()));       // Ticker
-        tableWidget->setItem(row, 2, new QTableWidgetItem(query.value("ISIN").toString()));         // ISIN
-        tableWidget->setItem(row, 3, new QTableWidgetItem(query.value("stock_type").toString()));   // Type
-        tableWidget->setItem(row, 5, new QTableWidgetItem(query.value("st_status").toString()));
+        tableWidget->setItem(row, 3, priceItem);
 
-        // Account (числовое значение)
-        QTableWidgetItem *accountItem = new QTableWidgetItem();
-        accountItem->setData(Qt::DisplayRole, query.value("id_account").toInt());
-        accountItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        tableWidget->setItem(row, 4, accountItem);
+        QTableWidgetItem *statusItem = new QTableWidgetItem();
+        QString status = query.value("st_status").toString();
+        statusItem->setText(status);
+        statusItem->setForeground(status == "получена" ? QColor(0, 128, 0) : QColor(255, 0, 0));
+        tableWidget->setItem(row, 4, statusItem);
     }
 
     // Автоподгон ширины колонки ISIN (после заполнения данных)
     tableWidget->resizeColumnToContents(2);
 
     // Подключение обработчика выбора строки
-    QObject::connect(tableWidget, &QTableWidget::itemSelectionChanged, [tableWidget]() {
+    tableSelectionConnection = QObject::connect(tableWidget, &QTableWidget::itemSelectionChanged, [tableWidget]() {
         auto selected = tableWidget->selectedItems();
         if (!selected.isEmpty()) {
             int row = selected.first()->row();
@@ -126,17 +128,20 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
 
 void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
 {
+    if (tableSelectionConnection != nullptr)
+        QObject::disconnect(tableSelectionConnection);
+
     if (!tableWidget) return;
 
     // Настройка таблицы
     tableWidget->clear();
     tableWidget->setRowCount(0);
-    tableWidget->setColumnCount(7); // 7 столбцов
+    tableWidget->setColumnCount(6);
 
     // Установка заголовков
     QStringList headers = {
-        "Seller Acc", "Buyer Acc", "Amount",
-        "Securities", "Date", "Status", "Depository"
+        "№депо продавца", "№депо покупателя", "Сумма",
+        "Ценные бумаги", "Дата", "Статус"
     };
     tableWidget->setHorizontalHeaderLabels(headers);
 
@@ -149,8 +154,8 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
 
     // Выполнение запроса
     QSqlQuery query(db);
-    if (!query.exec("SELECT id_account_sale, id_account_buy, summary_cost, "
-                    "stocks_ISINS, date, status, id_depository "
+    if (!query.exec("SELECT depo_saler, depo_buyer, summary_cost, "
+                    "stocks_ISINS, date, status "
                     "FROM Operations ")) {
         qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
         return;
@@ -164,13 +169,13 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
         // Seller Account
         QTableWidgetItem *sellerItem = new QTableWidgetItem();
         sellerItem->setData(Qt::DisplayRole,
-                            query.value("id_account_sale").isNull() ? 0 :
-                                query.value("id_account_sale").toInt());
+                            query.value("depo_saler").isNull() ? 0 :
+                                query.value("depo_saler").toInt());
         tableWidget->setItem(row, 0, sellerItem);
 
         // Buyer Account
         QTableWidgetItem *buyerItem = new QTableWidgetItem();
-        buyerItem->setData(Qt::DisplayRole, query.value("id_account_buy").toInt());
+        buyerItem->setData(Qt::DisplayRole, query.value("depo_buyer").toInt());
         tableWidget->setItem(row, 1, buyerItem);
 
         // Amount (с форматированием)
@@ -195,23 +200,73 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
         statusItem->setForeground(status == 0 ? QColor(255, 165, 0) : QColor(0, 128, 0));
         statusItem->setFont(QFont("Arial", -1, QFont::Bold));
         tableWidget->setItem(row, 5, statusItem);
-
-        // Depository
-        tableWidget->setItem(row, 6, new QTableWidgetItem(query.value("id_depository").toString()));
     }
 
     // Настройка столбцов
     tableWidget->resizeColumnsToContents();
-    tableWidget->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch); // Securities
+    tableWidget->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // Securities
 
     // Подключение обработчика выбора
-    QObject::connect(tableWidget, &QTableWidget::itemSelectionChanged, [tableWidget]() {
+    tableSelectionConnection = QObject::connect(tableWidget, &QTableWidget::itemSelectionChanged, [tableWidget]() {
         auto selected = tableWidget->selectedItems();
         if (!selected.isEmpty()) {
             int row = selected.first()->row();
             QString seller = tableWidget->item(row, 0)->text();
             QString buyer = tableWidget->item(row, 1)->text();
             qDebug() << "Выбрана операция между счетами:" << seller << "->" << buyer;
+        }
+    });
+}
+
+void DataBase::loadAccountsDataToTable(QTableWidget *tableWidget){
+    if (tableSelectionConnection != nullptr)
+        QObject::disconnect(tableSelectionConnection);
+
+    QSqlQuery query(db);
+    query.prepare("SELECT a.inn_invest, a.fio_inv, b.broker_name, a.acc_status "
+                        "FROM Account a "
+                        "JOIN Broker b ON a.id_broker = b.id_broker ");
+    query.exec();
+
+    // Настройка таблицы
+    tableWidget->clear();
+    tableWidget->setRowCount(0);
+    tableWidget->setColumnCount(4);
+
+    // Установка заголовков
+    QStringList headers = {
+        "ИНН инвестора", "ФИО", "Обслуживающий брокер", "Состояние аккаунта"
+    };
+    tableWidget->setHorizontalHeaderLabels(headers);
+
+    while (query.next()){
+        int row = tableWidget->rowCount();
+        tableWidget->insertRow(row);
+        tableWidget->setItem(row, 0, new QTableWidgetItem(query.value("inn_invest").toString()));
+        tableWidget->setItem(row, 1, new QTableWidgetItem(query.value("fio_inv").toString()));
+        tableWidget->setItem(row, 2, new QTableWidgetItem(query.value("broker_name").toString()));
+        QString accStatus = query.value("acc_status").toString();
+        QTableWidgetItem *statusItem = new QTableWidgetItem();
+        statusItem->setText(accStatus);
+        if (accStatus == "Зарегистрирован")
+            statusItem->setForeground(QColor(255, 165, 0));
+        else if (accStatus == "Отклонён")
+            statusItem->setForeground(QColor(256, 0, 0));
+        else
+            statusItem->setForeground(QColor(0, 128, 0));
+        tableWidget->setItem(row, 3, statusItem);
+    }
+    // Настройка столбцов
+    tableWidget->resizeColumnsToContents();
+    tableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+
+    // Подключение обработчика выбора
+    tableSelectionConnection = QObject::connect(tableWidget, &QTableWidget::itemSelectionChanged, [tableWidget]() {
+        auto selected = tableWidget->selectedItems();
+        if (!selected.isEmpty()) {
+            int row = selected.first()->row();
+            QString invINN = tableWidget->item(row, 0)->text();
+            qDebug() << "Выбран пользователь с ИНН:" << invINN;
         }
     });
 }
@@ -403,6 +458,48 @@ bool DataBase::importOperationsFromCSV(const QString& filePath)
 }
 
 //-------Broker------------
+void DataBase::InnFillingCmb(QComboBox* cmbInnAccount, QString login){
+    if (login != "") {
+        QSqlQuery query(db);
+        query.prepare("SELECT a.inn_invest "
+                      "FROM Account a "
+                      "JOIN Broker b ON b.id_broker = a.id_broker "
+                      "JOIN AISUser u ON u.id_user = b.id_user "
+                      "WHERE u.login = :login "
+                      "ORDER BY a.id_account");
+
+        query.bindValue(":login", login);
+        if (query.exec()) {
+            cmbInnAccount->clear();
+            while (query.next()) {
+                QString accountInn = query.value(0).toString();
+                cmbInnAccount->addItem(QString(accountInn), accountInn);
+            }
+        } else {
+            qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+            //stat_acc->setText("Ошибка запроса");
+            return;
+        }
+    } else {
+        QSqlQuery query(db);
+        query.prepare("SELECT a.inn_invest "
+                      "FROM Account a "
+                      "ORDER BY a.inn_invest");
+
+        if (query.exec()) {
+            cmbInnAccount->clear();
+            while (query.next()) {
+                QString accountInn = query.value(0).toString();
+                cmbInnAccount->addItem(QString(accountInn), accountInn);
+            }
+        } else {
+            qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+            //stat_acc->setText("Ошибка запроса");
+            return;
+        }
+    }
+}
+
 void DataBase::brokerFormInit(QString login, QLabel* name, QLabel* inn, QLabel* stat_acc, QLabel* stat_check) {
     QSqlQuery query(db);
 
@@ -464,29 +561,6 @@ void DataBase::brokerFormUpdate(QString login, QLabel* stat_acc, QLabel* stat_ch
         // Если запрос не вернул результатов
         stat_acc->setText("Брокер не найден");
         qDebug() << "Брокер с логином" << login << "не найден";
-    }
-}
-
-void DataBase::brokerFillingCmb(QString login, QComboBox* cmbInnAccount){
-    QSqlQuery query(db);
-    query.prepare("SELECT a.inn_invest "
-                  "FROM Account a "
-                  "JOIN Broker b ON b.id_broker = a.id_broker "
-                  "JOIN AISUser u ON u.id_user = b.id_user "
-                  "WHERE u.login = :login "
-                  "ORDER BY a.id_account");
-
-    query.bindValue(":login", login);
-    if (query.exec()) {
-        cmbInnAccount->clear();
-        while (query.next()) {
-            QString accountInn = query.value(0).toString();
-            cmbInnAccount->addItem(QString(accountInn), accountInn);
-        }
-    } else {
-        qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
-        //stat_acc->setText("Ошибка запроса");
-        return;
     }
 }
 
@@ -763,7 +837,7 @@ void DataBase::loadBrokersStocksDataToTable(QString login, QTableWidget* tableWi
     tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
-QString DataBase::deleteBrokerAccount(QString login, QTableWidget* textEdit, QString innAccountToDelete) {
+QString DataBase::deleteBrokerAccount(QString login, QString innAccountToDelete) {
     QSqlQuery query(db);
     bool success = false;
 
@@ -787,7 +861,7 @@ QString DataBase::deleteBrokerAccount(QString login, QTableWidget* textEdit, QSt
         return "Счет не найден или не принадлежит данному брокеру!";
     }
 
-    if (query.value(1).toInt() > 0) // < 0 проверять не буду - запрещу такую возможность
+    if (query.value(1).toFloat() > 0) // < 0 проверять не буду - запрещу такую возможность
         return "Счёт не может быть удалён, так как на нём остались средства!";
     else if (query.value(2).toInt() > 0)
         return "Счёт не может быть удалён. У владельца остались не проданные ценные бумаги!";
@@ -809,6 +883,36 @@ QString DataBase::deleteBrokerAccount(QString login, QTableWidget* textEdit, QSt
         }
     }
     return "Неопознанная ошибка.";
+}
+
+QString DataBase::appendBrokerAccount(QString login, QString newINN, QString newFIO){
+    QSqlQuery query(db);
+    query.prepare("SELECT COUNT(a.id_account) AS kol "
+                  "FROM Account a "
+                  "WHERE a.INN_invest = :INN ");
+    query.bindValue(":INN", newINN);
+    query.exec();
+    query.next();
+    if (query.value(0).toInt() != 0)
+        return "Пользователь уже зарегистрирован!";
+
+    query.prepare("SELECT b.id_broker "
+                  "FROM Broker b "
+                  "JOIN AISUser ais on ais.id_user = b.id_user "
+                  "WHERE ais.login = :log ");
+    query.bindValue(":log", login);
+    query.exec();
+    query.next();
+    QString idBroker = query.value(0).toString();
+
+    query.prepare("INSERT INTO Account (INN_invest, id_broker, FIO_inv) "
+                  "VALUES (:INN, :broker, :FIO) ");
+    query.bindValue(":broker", idBroker);
+    query.bindValue(":INN", newINN);
+    query.bindValue(":FIO", newFIO);
+    query.exec();
+    query.next();
+    return "Успешно";
 }
 
 //------Operator-----

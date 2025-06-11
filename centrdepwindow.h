@@ -20,6 +20,7 @@ private:
     DataBase* base;
 
 public:
+    int outputMode;
     centrdepwindow(QWidget *parent = nullptr);
     ~centrdepwindow();
     void setDataBase(DataBase* temp){base = temp;} // перенос коннекта с БД
@@ -32,8 +33,9 @@ private slots:
     void on_btnOperationAppend_clicked();
     void on_btnStockDelete_clicked();
     void on_btnReport_clicked();
-
     void on_btnBack_clicked();
+    void on_btnDepoInit_clicked();
+    void on_btnAccounts_clicked();
 
 public slots:
 signals:

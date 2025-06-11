@@ -15,6 +15,7 @@
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -44,6 +45,7 @@ public:
     QPushButton *btnAccountDel;
     QPushButton *btnAccountAppend;
     QPushButton *btnReports;
+    QPushButton *btnBudgetOper;
     QFrame *frmOutput;
     QPushButton *btnOperations;
     QPushButton *btnAccounts;
@@ -54,7 +56,17 @@ public:
     QPushButton *btnSearch;
     QComboBox *comboBox;
     QPushButton *btnBack;
+    QFrame *frmAccAppend;
+    QPushButton *btnAccept;
+    QLineEdit *edtFIO;
+    QLabel *lblINNInv;
+    QLabel *lblFIO;
+    QLineEdit *edtINNInv;
+    QFrame *frmBudget;
     QPushButton *pushButton;
+    QPushButton *pushButton_2;
+    QLineEdit *lineEdit;
+    QLabel *label;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -114,17 +126,20 @@ public:
         lblCkecks->setGeometry(QRect(10, 156, 101, 20));
         label_3 = new QLabel(frmInfo);
         label_3->setObjectName("label_3");
-        label_3->setGeometry(QRect(10, 207, 51, 21));
+        label_3->setGeometry(QRect(10, 194, 51, 21));
         label_3->setFont(font);
         btnAccountDel = new QPushButton(frmInfo);
         btnAccountDel->setObjectName("btnAccountDel");
-        btnAccountDel->setGeometry(QRect(10, 260, 171, 24));
+        btnAccountDel->setGeometry(QRect(10, 247, 171, 24));
         btnAccountAppend = new QPushButton(frmInfo);
         btnAccountAppend->setObjectName("btnAccountAppend");
-        btnAccountAppend->setGeometry(QRect(10, 237, 171, 24));
+        btnAccountAppend->setGeometry(QRect(10, 224, 171, 24));
         btnReports = new QPushButton(frmInfo);
         btnReports->setObjectName("btnReports");
-        btnReports->setGeometry(QRect(10, 283, 171, 24));
+        btnReports->setGeometry(QRect(10, 292, 171, 24));
+        btnBudgetOper = new QPushButton(frmInfo);
+        btnBudgetOper->setObjectName("btnBudgetOper");
+        btnBudgetOper->setGeometry(QRect(10, 269, 171, 24));
         frmOutput = new QFrame(centralwidget);
         frmOutput->setObjectName("frmOutput");
         frmOutput->setGeometry(QRect(200, 20, 591, 501));
@@ -160,9 +175,46 @@ public:
         btnBack = new QPushButton(centralwidget);
         btnBack->setObjectName("btnBack");
         btnBack->setGeometry(QRect(0, 0, 81, 21));
-        pushButton = new QPushButton(centralwidget);
+        frmAccAppend = new QFrame(centralwidget);
+        frmAccAppend->setObjectName("frmAccAppend");
+        frmAccAppend->setEnabled(true);
+        frmAccAppend->setGeometry(QRect(0, 380, 201, 141));
+        frmAccAppend->setAutoFillBackground(false);
+        frmAccAppend->setFrameShape(QFrame::Shape::StyledPanel);
+        frmAccAppend->setFrameShadow(QFrame::Shadow::Raised);
+        btnAccept = new QPushButton(frmAccAppend);
+        btnAccept->setObjectName("btnAccept");
+        btnAccept->setGeometry(QRect(60, 110, 61, 24));
+        edtFIO = new QLineEdit(frmAccAppend);
+        edtFIO->setObjectName("edtFIO");
+        edtFIO->setGeometry(QRect(10, 80, 181, 24));
+        lblINNInv = new QLabel(frmAccAppend);
+        lblINNInv->setObjectName("lblINNInv");
+        lblINNInv->setGeometry(QRect(10, 10, 41, 16));
+        lblFIO = new QLabel(frmAccAppend);
+        lblFIO->setObjectName("lblFIO");
+        lblFIO->setGeometry(QRect(10, 60, 91, 16));
+        edtINNInv = new QLineEdit(frmAccAppend);
+        edtINNInv->setObjectName("edtINNInv");
+        edtINNInv->setGeometry(QRect(10, 30, 181, 24));
+        edtINNInv->setInputMethodHints(Qt::InputMethodHint::ImhNone);
+        frmBudget = new QFrame(centralwidget);
+        frmBudget->setObjectName("frmBudget");
+        frmBudget->setGeometry(QRect(0, 380, 201, 121));
+        frmBudget->setFrameShape(QFrame::Shape::StyledPanel);
+        frmBudget->setFrameShadow(QFrame::Shadow::Raised);
+        pushButton = new QPushButton(frmBudget);
         pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(30, 410, 111, 24));
+        pushButton->setGeometry(QRect(20, 70, 71, 24));
+        pushButton_2 = new QPushButton(frmBudget);
+        pushButton_2->setObjectName("pushButton_2");
+        pushButton_2->setGeometry(QRect(100, 70, 71, 24));
+        lineEdit = new QLineEdit(frmBudget);
+        lineEdit->setObjectName("lineEdit");
+        lineEdit->setGeometry(QRect(20, 30, 151, 24));
+        label = new QLabel(frmBudget);
+        label->setObjectName("label");
+        label->setGeometry(QRect(20, 10, 141, 16));
         Broker->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Broker);
         menubar->setObjectName("menubar");
@@ -195,13 +247,24 @@ public:
         btnAccountDel->setText(QCoreApplication::translate("Broker", "\320\227\320\260\320\272\321\200\321\213\321\202\321\214 \321\201\321\207\321\221\321\202", nullptr));
         btnAccountAppend->setText(QCoreApplication::translate("Broker", "\320\227\320\260\321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\270\321\200\320\276\320\262\320\260\321\202\321\214 \321\201\321\207\321\221\321\202", nullptr));
         btnReports->setText(QCoreApplication::translate("Broker", "\320\236\321\202\320\272\321\200\321\213\321\202\321\214 \321\207\320\265\320\272\320\270 (\320\276\321\202\321\207\321\221\321\202\321\213)", nullptr));
+        btnBudgetOper->setText(QCoreApplication::translate("Broker", "\320\236\320\261\320\275\320\276\320\262\320\270\321\202\321\214 \320\261\320\260\320\273\320\260\320\275\321\201", nullptr));
         btnOperations->setText(QCoreApplication::translate("Broker", "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\270", nullptr));
         btnAccounts->setText(QCoreApplication::translate("Broker", "\320\241\321\207\320\265\321\202\320\260", nullptr));
         btnStocks->setText(QCoreApplication::translate("Broker", "\320\246\320\265\320\275\320\275\321\213\320\265 \320\261\321\203\320\274\320\260\320\263\320\270", nullptr));
         lblSearch->setText(QCoreApplication::translate("Broker", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\270\320\275\320\262\320\265\321\201\321\202\320\276\321\200\320\260 (\320\277\320\276 \320\230\320\235\320\235):", nullptr));
         btnSearch->setText(QCoreApplication::translate("Broker", "\320\237\320\276\320\270\321\201\320\272", nullptr));
         btnBack->setText(QCoreApplication::translate("Broker", "\320\235\320\260\320\267\320\260\320\264", nullptr));
-        pushButton->setText(QCoreApplication::translate("Broker", "\320\236\320\261\320\275\320\276\320\262\320\270\321\202\321\214 \320\261\320\260\320\273\320\260\320\275\321\201", nullptr));
+        btnAccept->setText(QCoreApplication::translate("Broker", "\320\236\320\232", nullptr));
+        edtFIO->setInputMask(QString());
+        edtFIO->setText(QCoreApplication::translate("Broker", "\320\230\320\262\320\260\320\275\320\276\320\262 C.C.", nullptr));
+        edtFIO->setPlaceholderText(QString());
+        lblINNInv->setText(QCoreApplication::translate("Broker", "\320\230\320\235\320\235:", nullptr));
+        lblFIO->setText(QCoreApplication::translate("Broker", "\320\244\320\260\320\274\320\270\320\273\320\270\321\217 \320\230.\320\236.:", nullptr));
+        edtINNInv->setInputMask(QString());
+        edtINNInv->setText(QCoreApplication::translate("Broker", "000111222333", nullptr));
+        pushButton->setText(QCoreApplication::translate("Broker", "\320\241\320\275\321\217\321\202\321\214", nullptr));
+        pushButton_2->setText(QCoreApplication::translate("Broker", "\320\237\320\276\320\273\320\276\320\266\320\270\321\202\321\214", nullptr));
+        label->setText(QCoreApplication::translate("Broker", "\320\243\320\272\320\260\320\266\320\270\321\202\320\265 \321\201\321\203\320\274\320\274\321\203 \320\262 \321\200\321\203\320\261\320\273\321\217\321\205", nullptr));
     } // retranslateUi
 
 };

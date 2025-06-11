@@ -41,7 +41,7 @@
      <rect>
       <x>190</x>
       <y>60</y>
-      <width>171</width>
+      <width>251</width>
       <height>31</height>
      </rect>
     </property>
@@ -77,6 +77,19 @@
       <string>Операции</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="btnAccounts">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>10</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Счета</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">
@@ -84,7 +97,7 @@
       <x>10</x>
       <y>180</y>
       <width>171</width>
-      <height>121</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -195,6 +208,97 @@
       <height>451</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QFrame" name="frmDepoInit">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>340</y>
+      <width>191</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <widget class="QComboBox" name="comboBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>151</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="edtDepoNum">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>151</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="maxLength">
+      <number>4</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblDepo">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>141</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Депозитарный номер:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblINN">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>181</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Присвоить пользователю с ИНН:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnDepoInit">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>120</y>
+       <width>80</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Применить</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

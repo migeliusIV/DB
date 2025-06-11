@@ -1,3 +1,4 @@
+release/accountsmanager.o
 release/broker.o
 release/centrdepwindow.o
 release/database.o
@@ -8,6 +9,7 @@ release/main.o
 release/mainwindow.o
 release/passwchange.o
 release/qrc_qmake_qmake_qm_files.o
+release/moc_accountsmanager.o
 release/moc_broker.o
 release/moc_centrdepwindow.o
 release/moc_empldirector.o
