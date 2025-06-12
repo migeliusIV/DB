@@ -51,8 +51,8 @@ void MainWindow::on_btnEnter_clicked()
 
     switch (base->SelectAISUser(login, password)){
     case 1: { // central depository
-        centrdepwindow *window = new centrdepwindow();
-        window->centrdepwindow::setDataBase(getDataBase());
+        centrdepwindow *window = new centrdepwindow(getDataBase());
+        //window->centrdepwindow::setDataBase(getDataBase());
         window->show();
         this->close();
         break;

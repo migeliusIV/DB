@@ -4,14 +4,15 @@
 // my
 #include "mainwindow.h"
 
-centrdepwindow::centrdepwindow(QWidget *parent):
+centrdepwindow::centrdepwindow(DataBase* temp, QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::centrdepwindow)
 {
     ui->setupUi(this);
     ui->frmDepoInit->hide();
+    setDataBase(temp);
     outputMode = 0;
-    //base->InnFillingCmb(ui->comboBox);
+    base->InnFillingCmb(ui->comboBox);
 
     QTableWidget* operationsTable = ui->tblOutput;                                                          // Box field relative
     QComboBox* operationsComboBox = ui->comboBox;
@@ -30,7 +31,7 @@ centrdepwindow::centrdepwindow(QWidget *parent):
                 operationsComboBox->setCurrentIndex(index);
             }
         }
-    });
+    });    
 }
 
 centrdepwindow::~centrdepwindow()
@@ -65,6 +66,7 @@ void centrdepwindow::on_btnStockAppend_clicked()
                                                     "CSV Files (*.csv)");
     if (!filePath.isEmpty()) {
         base->importReleasedStocksFromCSV(filePath);
+        base->loadStockDataToTable(ui->tblOutput);
     }
 }
 
@@ -77,6 +79,7 @@ void centrdepwindow::on_btnOperationAppend_clicked()
                                                     "CSV Files (*.csv)");
     if (!filePath.isEmpty()) {
         base->importOperationsFromCSV(filePath);
+        base->loadOperationsDataToTable(ui->tblOutput);
     }
 }
 
@@ -89,6 +92,7 @@ void centrdepwindow::on_btnStockDelete_clicked()
                                                     "CSV Files (*.csv)");
     if (!filePath.isEmpty()) {
         base->exportReleasedStocksToCSV(filePath);
+        base->loadStockDataToTable(ui->tblOutput);
     }
 }
 
@@ -130,22 +134,31 @@ void centrdepwindow::on_btnBack_clicked()
 
 void centrdepwindow::on_btnDepoInit_clicked()
 {
-    if (ui->edtDepoNum->text().length() != 4){
-        QMessageBox::warning(this, "Ошибка", "Неверный номер депозитарного счёта!");
-    } else if (ui->comboBox->currentText().length() != 12){
-        QMessageBox::warning(this, "Ошибка", "Неверный ИНН!");
-    } else {
-        // Создаем диалог подтверждения
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "Подтверждение изнений",
-                                      QString("Вы действительно хотите присвоить инвестору счет депо №%1?\nЭто действие нельзя отменить.").arg(ui->edtDepoNum->text()),
-                                      QMessageBox::Yes | QMessageBox::No);
+    QString inn = ui->comboBox->currentText();
+    if (base->getAccStatus(inn)  == "Зарегистрирован"){
+        if (ui->edtDepoNum->text().length() != 4){
+            QMessageBox::warning(this, "Ошибка", "Неверный номер депозитарного счёта!");
+        } else if (inn.length() != 12){
+            QMessageBox::warning(this, "Ошибка", "Неверный ИНН!");
+        } else {
+            // Создаем диалог подтверждения
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, "Подтверждение изнений",
+                                          QString("Вы действительно хотите присвоить инвестору счет депо №%1?\nЭто действие нельзя отменить.").arg(ui->edtDepoNum->text()),
+                                          QMessageBox::Yes | QMessageBox::No);
 
-        // Если пользователь подтвердил удаление
-        if (reply == QMessageBox::Yes) {
-            // функция добавления
+            // Если пользователь подтвердил изменения
+            if (reply == QMessageBox::Yes) {
+                QString resFunc = base->acceptAccount(inn, ui->edtDepoNum->text());
+                if (resFunc != "Успех") {
+                    QMessageBox::warning(this, "Ошибка", resFunc);
+                    return;
+                }
+                base->loadAccountsDataToTable(ui->tblOutput);
+            }
         }
-    }
+    } else
+        QMessageBox::warning(this, "Ошибка", "Операция не может быть совершена");
 }
 
 
@@ -156,4 +169,26 @@ void centrdepwindow::on_btnAccounts_clicked()
     base->loadAccountsDataToTable(ui->tblOutput);
     outputMode = 3;
 }
+
+
+void centrdepwindow::on_btnReject_clicked()
+{
+    QString inn = ui->comboBox->currentText();
+    if (base->getAccStatus(inn) == "Зарегистрирован"){
+        // Создаем диалог подтверждения
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Подтверждение изнений",
+                                      QString("Вы действительно хотите отклонить запрос на регистрацию счёта инвестору с ИНН: №%1?\nЭто действие нельзя отменить.").arg(ui->comboBox->currentText()),
+                                      QMessageBox::Yes | QMessageBox::No);
+
+        // Если пользователь подтвердил удаление
+        if (reply == QMessageBox::Yes) {
+            if (!base->rejectAccount(inn))
+                QMessageBox::warning(this, "Ошибка", "Операция не может быть совершена");
+            base->loadAccountsDataToTable(ui->tblOutput);
+        }
+    } else
+        QMessageBox::warning(this, "Ошибка", "Операция не может быть совершена");
+}
+
 

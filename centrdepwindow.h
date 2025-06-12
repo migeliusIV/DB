@@ -21,7 +21,7 @@ private:
 
 public:
     int outputMode;
-    centrdepwindow(QWidget *parent = nullptr);
+    centrdepwindow(DataBase*, QWidget *parent = nullptr);
     ~centrdepwindow();
     void setDataBase(DataBase* temp){base = temp;} // перенос коннекта с БД
     DataBase* getDataBase() const {return base;}   // getter для указателя на БД
@@ -36,6 +36,8 @@ private slots:
     void on_btnBack_clicked();
     void on_btnDepoInit_clicked();
     void on_btnAccounts_clicked();
+
+    void on_btnReject_clicked();
 
 public slots:
 signals:

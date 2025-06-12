@@ -48,6 +48,7 @@ public:
     QLabel *lblDepo;
     QLabel *lblINN;
     QPushButton *btnDepoInit;
+    QPushButton *btnReject;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -136,7 +137,10 @@ public:
         lblINN->setFont(font2);
         btnDepoInit = new QPushButton(frmDepoInit);
         btnDepoInit->setObjectName("btnDepoInit");
-        btnDepoInit->setGeometry(QRect(40, 120, 80, 24));
+        btnDepoInit->setGeometry(QRect(10, 120, 80, 24));
+        btnReject = new QPushButton(frmDepoInit);
+        btnReject->setObjectName("btnReject");
+        btnReject->setGeometry(QRect(100, 120, 80, 24));
         centrdepwindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(centrdepwindow);
         menubar->setObjectName("menubar");
@@ -167,6 +171,7 @@ public:
         lblDepo->setText(QCoreApplication::translate("centrdepwindow", "\320\224\320\265\320\277\320\276\320\267\320\270\321\202\320\260\321\200\320\275\321\213\320\271 \320\275\320\276\320\274\320\265\321\200:", nullptr));
         lblINN->setText(QCoreApplication::translate("centrdepwindow", "\320\237\321\200\320\270\321\201\320\262\320\276\320\270\321\202\321\214 \320\277\320\276\320\273\321\214\320\267\320\276\320\262\320\260\321\202\320\265\320\273\321\216 \321\201 \320\230\320\235\320\235:", nullptr));
         btnDepoInit->setText(QCoreApplication::translate("centrdepwindow", "\320\237\321\200\320\270\320\274\320\265\320\275\320\270\321\202\321\214", nullptr));
+        btnReject->setText(QCoreApplication::translate("centrdepwindow", "\320\236\321\202\320\272\320\273\320\276\320\275\320\270\321\202\321\214", nullptr));
     } // retranslateUi
 
 };

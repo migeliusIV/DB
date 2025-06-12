@@ -223,19 +223,21 @@ void DataBase::loadAccountsDataToTable(QTableWidget *tableWidget){
         QObject::disconnect(tableSelectionConnection);
 
     QSqlQuery query(db);
-    query.prepare("SELECT a.inn_invest, a.fio_inv, b.broker_name, a.acc_status "
-                        "FROM Account a "
-                        "JOIN Broker b ON a.id_broker = b.id_broker ");
+    query.prepare("SELECT a.inn_invest, a.fio_inv, b.broker_name, a.acc_status, ad.depo_num "
+                  "FROM Account a "
+                  "JOIN Broker b ON a.id_broker = b.id_broker "
+                  "LEFT JOIN AccDepo ad ON ad.id_account = a.id_account "
+                  "ORDER BY a.acc_status DESC ");
     query.exec();
 
     // Настройка таблицы
     tableWidget->clear();
     tableWidget->setRowCount(0);
-    tableWidget->setColumnCount(4);
+    tableWidget->setColumnCount(5);
 
     // Установка заголовков
     QStringList headers = {
-        "ИНН инвестора", "ФИО", "Обслуживающий брокер", "Состояние аккаунта"
+        "ИНН инвестора", "ФИО", "Обслуживающий брокер", "Состояние аккаунта", "№депозитарного счёта"
     };
     tableWidget->setHorizontalHeaderLabels(headers);
 
@@ -250,11 +252,18 @@ void DataBase::loadAccountsDataToTable(QTableWidget *tableWidget){
         statusItem->setText(accStatus);
         if (accStatus == "Зарегистрирован")
             statusItem->setForeground(QColor(255, 165, 0));
-        else if (accStatus == "Отклонён")
-            statusItem->setForeground(QColor(256, 0, 0));
-        else
+        else if (accStatus == "Активирован")
             statusItem->setForeground(QColor(0, 128, 0));
+        else
+            statusItem->setForeground(QColor(128, 0, 0));
         tableWidget->setItem(row, 3, statusItem);
+
+        QString accDepo = query.value("depo_num").toString();
+        QTableWidgetItem *accDepoItem = new QTableWidgetItem();
+        if (accDepo == "")
+            accDepo = "----";
+        accDepoItem->setText(accDepo);
+        tableWidget->setItem(row, 4, accDepoItem);
     }
     // Настройка столбцов
     tableWidget->resizeColumnsToContents();
@@ -384,7 +393,7 @@ bool DataBase::importReleasedStocksFromCSV(const QString& filePath)
         query.bindValue(":ticker", fields[1]);
         query.bindValue(":ISIN", fields[2]);
         query.bindValue(":stock_type", fields[3]);
-        query.bindValue(":st_status", "передана");
+        query.bindValue(":st_status", "получена");
 
         if (!query.exec()) {
             db.rollback();
@@ -433,11 +442,11 @@ bool DataBase::importOperationsFromCSV(const QString& filePath)
         QString arraySql = "ARRAY['" + isins.join("','") + "']";
 
         QSqlQuery query(db);
-        query.prepare("INSERT INTO Operations (id_account_buy, id_account_sale, summary_cost, stocks_ISINS, date, status)"
-                      "VALUES(:id_account_buy, :id_account_sale, :summary_cost, :stocks_ISINS, :date, :status)");
+        query.prepare("INSERT INTO Operations (depo_buyer, depo_saler, summary_cost, stocks_ISINS, date, status)"
+                      "VALUES(:depo_buyer, :depo_saler, :summary_cost, :stocks_ISINS, :date, :status)");
 
-        query.bindValue(":id_account_buy", fields[0]);
-        query.bindValue(":id_account_sale", fields[1]);
+        query.bindValue(":depo_buyer", fields[0]);
+        query.bindValue(":depo_saler", fields[1]);
         query.bindValue(":summary_cost", fields[2]);
         query.bindValue(":stocks_ISINS", arraySql);
         query.bindValue(":date", fields[4]);
@@ -457,6 +466,60 @@ bool DataBase::importOperationsFromCSV(const QString& filePath)
     return true;
 }
 
+bool DataBase::rejectAccount(QString currInn){
+    QSqlQuery query(db);
+    query.prepare("UPDATE Account "
+                  "SET acc_status = 'Отклонён' "
+                  "WHERE inn_invest = :INN "
+                  "AND acc_status = 'Зарегистрирован' ");
+    query.bindValue(":INN", currInn);
+    if (!query.exec())
+        return false;
+    query.next();
+    return true;
+}
+
+QString DataBase::acceptAccount(QString currInn, QString newDepo){
+    QSqlQuery query(db);
+    // нужно найти id по инн
+    query.prepare("SELECT a.id_account "
+                  "FROM Account a "
+                  "WHERE a.INN_invest = :INN ");
+    query.bindValue(":INN", currInn);
+    if (!query.exec())
+        return "Пользователя не существует или \nего аккаунт уже активирован.";
+    query.next();
+
+    QString currId = query.value(0).toString();
+    query.prepare("INSERT INTO AccDepo (depo_num, id_account) "
+                  "values (:numer, :id_acc) ");
+    query.bindValue(":numer", newDepo);
+    query.bindValue(":id_acc", currId);
+    if (!query.exec())
+        return "Не удалось совершить операцию.";
+
+    // нужно установить статус с зарег на активирован
+    query.prepare("UPDATE Account "
+                  "SET acc_status = 'Активирован' "
+                  "WHERE id_account = :id_acc");
+    query.bindValue(":id_acc", currId);
+    if (!query.exec())
+        return "Не удалось поменять статус.";
+
+    return "Успех";
+}
+
+QString DataBase::getAccStatus(QString currInn) {
+    QSqlQuery query(db);
+    // нужно найти id по инн
+    query.prepare("SELECT a.acc_status "
+                  "FROM Account a "
+                  "WHERE a.INN_invest = :INN ");
+    query.bindValue(":INN", currInn);
+    query.exec();
+    query.next();
+    return query.value(0).toString();
+}
 //-------Broker------------
 void DataBase::InnFillingCmb(QComboBox* cmbInnAccount, QString login){
     if (login != "") {

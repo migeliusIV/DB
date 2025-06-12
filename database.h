@@ -42,6 +42,9 @@ public:
     bool exportReleasedStocksToCSV(const QString&);
     bool importReleasedStocksFromCSV(const QString&);
     bool importOperationsFromCSV(const QString&);
+    bool rejectAccount(QString);
+    QString acceptAccount(QString, QString);
+    QString getAccStatus(QString);
     // QString функция для назначения депо счёта
     // переписать функцию для заполнения комбобокса
     //Broker
