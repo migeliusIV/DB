@@ -129,7 +129,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>240</y>
+      <y>185</y>
       <width>175</width>
       <height>24</height>
      </rect>
@@ -148,7 +148,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tbBroker">
      <attribute name="title">
@@ -193,7 +193,7 @@
        <string>Название:</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="edtINN">
       <property name="geometry">
        <rect>
         <x>70</x>
@@ -202,8 +202,11 @@
         <height>24</height>
        </rect>
       </property>
+      <property name="maxLength">
+       <number>10</number>
+      </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_2">
+     <widget class="QLineEdit" name="edtName">
       <property name="geometry">
        <rect>
         <x>70</x>
@@ -226,7 +229,7 @@
        <string>Логин:</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_3">
+     <widget class="QLineEdit" name="edtLoginBroker">
       <property name="geometry">
        <rect>
         <x>70</x>
@@ -249,7 +252,7 @@
        <string>Пароль:</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_4">
+     <widget class="QLineEdit" name="edtPasswordBroker">
       <property name="geometry">
        <rect>
         <x>70</x>
@@ -299,6 +302,9 @@
         <height>24</height>
        </rect>
       </property>
+      <property name="text">
+       <string>Иванов C.C.</string>
+      </property>
      </widget>
      <widget class="QLabel" name="label_8">
       <property name="geometry">
@@ -331,6 +337,12 @@
         <width>131</width>
         <height>24</height>
        </rect>
+      </property>
+      <property name="text">
+       <string>70001112233</string>
+      </property>
+      <property name="maxLength">
+       <number>11</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_9">

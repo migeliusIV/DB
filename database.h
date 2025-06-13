@@ -59,10 +59,11 @@ public:
     //Operator
     void loadDealsRequests(QTableWidget*, int = 0);
     bool checkSufficientStocksForOperation(int);
-    //HR
     //Director
     void loadDirectEmployeesToTable(QTableWidget*);
     void loadDirectBrokersToTable(QTableWidget*);
+    QString appendDirectorsBroker(QString, QString, QString, QString);
+    QString appendDirectorsEmployee(QString, QString, QString, QString, QString = "", QString = "");
     //Password window
     void setPassword(QString, QString);
 };

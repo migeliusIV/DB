@@ -49,6 +49,8 @@ public:
     QWidget *tab_2;
     QPushButton *btnAccntsAll;
     QPushButton *btnAccntsNew;
+    QComboBox *comboBox_2;
+    QPushButton *pushButton;
     QWidget *tab_3;
     QPushButton *btnDealsNew_3;
     QPushButton *btnDealsAll_3;
@@ -128,6 +130,13 @@ public:
         btnAccntsNew = new QPushButton(tab_2);
         btnAccntsNew->setObjectName("btnAccntsNew");
         btnAccntsNew->setGeometry(QRect(0, 26, 80, 24));
+        comboBox_2 = new QComboBox(tab_2);
+        comboBox_2->setObjectName("comboBox_2");
+        comboBox_2->setGeometry(QRect(120, 10, 121, 24));
+        comboBox_2->setEditable(true);
+        pushButton = new QPushButton(tab_2);
+        pushButton->setObjectName("pushButton");
+        pushButton->setGeometry(QRect(240, 10, 80, 24));
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName("tab_3");
@@ -204,6 +213,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("EmplOperator", "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\270", nullptr));
         btnAccntsAll->setText(QCoreApplication::translate("EmplOperator", "\320\222\321\201\320\265", nullptr));
         btnAccntsNew->setText(QCoreApplication::translate("EmplOperator", "\320\235\320\276\320\262\321\213\320\265", nullptr));
+        pushButton->setText(QCoreApplication::translate("EmplOperator", "\320\236\321\202\320\272\320\273\320\276\320\275\320\270\321\202\321\214", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("EmplOperator", "\320\241\321\207\320\265\321\202\320\260", nullptr));
         btnDealsNew_3->setText(QCoreApplication::translate("EmplOperator", "\320\235\320\276\320\262\321\213\320\265", nullptr));
         btnDealsAll_3->setText(QCoreApplication::translate("EmplOperator", "\320\222\321\201\320\265", nullptr));

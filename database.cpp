@@ -1161,8 +1161,6 @@ void DataBase::setPassword(QString login, QString newPassword){
     query.bindValue(":newPass", newPassword);
     query.exec();
 }
-
-//-------HR-----------
 //-----Director-------
 void DataBase::loadDirectEmployeesToTable(QTableWidget* tableWidget){
     QSqlQuery query(db);
@@ -1242,4 +1240,87 @@ void DataBase::loadDirectBrokersToTable(QTableWidget* tableWidget){
     // Автоподгон ширины столбцов
     tableWidget->resizeColumnsToContents();
     tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
+
+QString DataBase::appendDirectorsBroker(QString INN, QString name, QString login, QString password){
+    QSqlQuery query(db);
+    // Проверка существования пользователя в АИС
+    query.prepare("SELECT ais.login "
+                  "FROM AISUser ais "
+                  "WHERE ais.login = :log ");
+    query.bindValue(":log", login);
+    query.exec();
+    query.next();
+    if (query.value(0).toString() == login)
+        return "Пользователь с указанным логином уже существует.";
+
+    // Добавление в АИС пользователя
+    query.prepare("INSERT INTO AISUser (login, passw, user_type) "
+                  "VALUES (:log, :pass, 'operator') ");
+    query.bindValue(":log", login);
+    query.bindValue(":pass", password);
+    query.exec();
+
+    // Получение айдишника пользователя в АИС
+    query.prepare("SELECT id_user "
+                  "FROM AISUser "
+                  "WHERE login = :log");
+    query.bindValue(":log", login);
+    query.exec();
+    query.next();
+    QString idUser = query.value(0).toString();
+
+    query.prepare("INSERT INTO Broker (INN, broker_name, id_user) "
+                  "VALUES (:inn, :name, :id_user) ");
+    query.bindValue(":inn", INN);
+    query.bindValue(":name", name);
+    query.bindValue(":id_user", idUser);
+    if (!query.exec())
+        return "Не удалось добавить сотрудника!";
+
+    return "Успех";
+}
+
+QString DataBase::appendDirectorsEmployee(QString FIO, QString phone, QString salary, QString post, QString login, QString password){
+    QSqlQuery mainQuery(db);
+    mainQuery.prepare("INSERT INTO Employee (FIO_empl, phone, salary, post, id_user)"
+                      "VALUES (:FIO, :phone, :salary, :post, :id_user) ");
+
+    if (login != "" && password != "") {
+        QSqlQuery query(db);
+        query.prepare("SELECT ais.login "
+                      "FROM AISUser ais "
+                      "WHERE ais.login = :log ");
+        query.bindValue(":log", login);
+        query.exec();
+        query.next();
+        if (query.value(0).toString() == login)
+            return "Пользователь с указанным логином уже существует.";
+
+        query.prepare("INSERT INTO AISUser (login, passw, user_type) "
+                       "VALUES (:log, :pass, 'operator') ");
+        query.bindValue(":log", login);
+        query.bindValue(":pass", password);
+        query.exec();
+
+        query.prepare("SELECT id_user "
+                      "FROM AISUser "
+                      "WHERE login = :log");
+        query.bindValue(":log", login);
+        query.exec();
+        query.next();
+        QString idUser = query.value(0).toString();
+
+        mainQuery.bindValue(":id_user", idUser);
+    } else
+        mainQuery.bindValue(":id_user", QVariant());
+
+    mainQuery.bindValue(":FIO", FIO);
+    mainQuery.bindValue(":phone", phone);
+    mainQuery.bindValue(":salary", salary);
+    mainQuery.bindValue(":post", post);
+    if (!mainQuery.exec())
+        return "Не удалось добавить сотрудника!";
+
+    return "Успех";
 }

@@ -44,12 +44,12 @@ public:
     QPushButton *btnAppendBroker;
     QLabel *label_2;
     QLabel *label_3;
-    QLineEdit *lineEdit;
-    QLineEdit *lineEdit_2;
+    QLineEdit *edtINN;
+    QLineEdit *edtName;
     QLabel *label_4;
-    QLineEdit *lineEdit_3;
+    QLineEdit *edtLoginBroker;
     QLabel *label_5;
-    QLineEdit *lineEdit_4;
+    QLineEdit *edtPasswordBroker;
     QWidget *tbEmployee;
     QLabel *label_6;
     QLabel *label_7;
@@ -124,24 +124,25 @@ public:
         label_3 = new QLabel(tbBroker);
         label_3->setObjectName("label_3");
         label_3->setGeometry(QRect(10, 40, 61, 16));
-        lineEdit = new QLineEdit(tbBroker);
-        lineEdit->setObjectName("lineEdit");
-        lineEdit->setGeometry(QRect(70, 10, 131, 24));
-        lineEdit_2 = new QLineEdit(tbBroker);
-        lineEdit_2->setObjectName("lineEdit_2");
-        lineEdit_2->setGeometry(QRect(70, 40, 131, 24));
+        edtINN = new QLineEdit(tbBroker);
+        edtINN->setObjectName("edtINN");
+        edtINN->setGeometry(QRect(70, 10, 131, 24));
+        edtINN->setMaxLength(10);
+        edtName = new QLineEdit(tbBroker);
+        edtName->setObjectName("edtName");
+        edtName->setGeometry(QRect(70, 40, 131, 24));
         label_4 = new QLabel(tbBroker);
         label_4->setObjectName("label_4");
         label_4->setGeometry(QRect(10, 70, 49, 16));
-        lineEdit_3 = new QLineEdit(tbBroker);
-        lineEdit_3->setObjectName("lineEdit_3");
-        lineEdit_3->setGeometry(QRect(70, 70, 131, 24));
+        edtLoginBroker = new QLineEdit(tbBroker);
+        edtLoginBroker->setObjectName("edtLoginBroker");
+        edtLoginBroker->setGeometry(QRect(70, 70, 131, 24));
         label_5 = new QLabel(tbBroker);
         label_5->setObjectName("label_5");
         label_5->setGeometry(QRect(10, 100, 49, 16));
-        lineEdit_4 = new QLineEdit(tbBroker);
-        lineEdit_4->setObjectName("lineEdit_4");
-        lineEdit_4->setGeometry(QRect(70, 100, 131, 24));
+        edtPasswordBroker = new QLineEdit(tbBroker);
+        edtPasswordBroker->setObjectName("edtPasswordBroker");
+        edtPasswordBroker->setGeometry(QRect(70, 100, 131, 24));
         tabUserAppend->addTab(tbBroker, QString());
         tbEmployee = new QWidget();
         tbEmployee->setObjectName("tbEmployee");
@@ -163,6 +164,7 @@ public:
         edtPhone = new QLineEdit(tbEmployee);
         edtPhone->setObjectName("edtPhone");
         edtPhone->setGeometry(QRect(100, 40, 131, 24));
+        edtPhone->setMaxLength(11);
         label_9 = new QLabel(tbEmployee);
         label_9->setObjectName("label_9");
         label_9->setGeometry(QRect(10, 70, 61, 16));
@@ -207,7 +209,7 @@ public:
 
         retranslateUi(EmplDirector);
 
-        tabUserAppend->setCurrentIndex(1);
+        tabUserAppend->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(EmplDirector);
@@ -232,7 +234,9 @@ public:
         tabUserAppend->setTabText(tabUserAppend->indexOf(tbBroker), QCoreApplication::translate("EmplDirector", "\320\221\321\200\320\276\320\272\320\265\321\200", nullptr));
         label_6->setText(QCoreApplication::translate("EmplDirector", "\320\224\320\276\320\273\320\266\320\275\320\276\321\201\321\202\321\214:", nullptr));
         label_7->setText(QCoreApplication::translate("EmplDirector", "\320\244\320\260\320\274\320\270\320\273\320\270\321\217 \320\230.\320\236.:", nullptr));
+        edtFIO->setText(QCoreApplication::translate("EmplDirector", "\320\244\320\260\320\274\320\270\320\273\320\270\321\217 C.C.", nullptr));
         label_8->setText(QCoreApplication::translate("EmplDirector", "\320\242\320\265\320\273\320\265\321\204\320\276\320\275:", nullptr));
+        edtPhone->setText(QCoreApplication::translate("EmplDirector", "70001112233", nullptr));
         label_9->setText(QCoreApplication::translate("EmplDirector", "\320\227\320\260\321\200\320\277\320\273\320\260\321\202\320\260:", nullptr));
         btnAppendEmployee->setText(QCoreApplication::translate("EmplDirector", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214", nullptr));
         chkOperator->setText(QCoreApplication::translate("EmplDirector", "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\276\320\275\320\270\321\201\321\202", nullptr));
