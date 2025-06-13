@@ -38,7 +38,7 @@ public:
     QTableWidget *tblOutput;
     QPushButton *btnDepsBrokers;
     QPushButton *btnDepsOpers;
-    QPushButton *pushButton;
+    QPushButton *btnDeleteUser;
     QTabWidget *tabUserAppend;
     QWidget *tbBroker;
     QPushButton *btnAppendBroker;
@@ -107,9 +107,9 @@ public:
         btnDepsOpers = new QPushButton(frmOutput);
         btnDepsOpers->setObjectName("btnDepsOpers");
         btnDepsOpers->setGeometry(QRect(78, 17, 91, 24));
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(10, 240, 175, 24));
+        btnDeleteUser = new QPushButton(centralwidget);
+        btnDeleteUser->setObjectName("btnDeleteUser");
+        btnDeleteUser->setGeometry(QRect(10, 185, 175, 24));
         tabUserAppend = new QTabWidget(centralwidget);
         tabUserAppend->setObjectName("tabUserAppend");
         tabUserAppend->setGeometry(QRect(195, 45, 521, 381));
@@ -225,7 +225,7 @@ public:
 "    \320\264\320\265\320\277\320\276\320\267\320\270\321\202\320\260\321\200\320\270\321\217", nullptr));
         btnDepsBrokers->setText(QCoreApplication::translate("EmplDirector", "\320\221\321\200\320\276\320\272\320\265\321\200\321\213", nullptr));
         btnDepsOpers->setText(QCoreApplication::translate("EmplDirector", "\320\241\320\276\321\202\321\200\321\203\320\264\320\275\320\270\320\272\320\270", nullptr));
-        pushButton->setText(QCoreApplication::translate("EmplDirector", "\320\243\320\264\320\260\320\273\320\270\321\202\321\214 \320\277\320\276\320\273\321\214\320\267\320\276\320\262\320\260\321\202\320\265\320\273\321\217 \320\270\320\267 \320\220\320\230\320\241", nullptr));
+        btnDeleteUser->setText(QCoreApplication::translate("EmplDirector", "\320\243\320\264\320\260\320\273\320\270\321\202\321\214 \320\277\320\276\320\273\321\214\320\267\320\276\320\262\320\260\321\202\320\265\320\273\321\217 \320\270\320\267 \320\220\320\230\320\241", nullptr));
         btnAppendBroker->setText(QCoreApplication::translate("EmplDirector", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214", nullptr));
         label_2->setText(QCoreApplication::translate("EmplDirector", "\320\230\320\235\320\235:", nullptr));
         label_3->setText(QCoreApplication::translate("EmplDirector", "\320\235\320\260\320\267\320\262\320\260\320\275\320\270\320\265:", nullptr));
@@ -234,7 +234,7 @@ public:
         tabUserAppend->setTabText(tabUserAppend->indexOf(tbBroker), QCoreApplication::translate("EmplDirector", "\320\221\321\200\320\276\320\272\320\265\321\200", nullptr));
         label_6->setText(QCoreApplication::translate("EmplDirector", "\320\224\320\276\320\273\320\266\320\275\320\276\321\201\321\202\321\214:", nullptr));
         label_7->setText(QCoreApplication::translate("EmplDirector", "\320\244\320\260\320\274\320\270\320\273\320\270\321\217 \320\230.\320\236.:", nullptr));
-        edtFIO->setText(QCoreApplication::translate("EmplDirector", "\320\244\320\260\320\274\320\270\320\273\320\270\321\217 C.C.", nullptr));
+        edtFIO->setText(QCoreApplication::translate("EmplDirector", "\320\230\320\262\320\260\320\275\320\276\320\262 C.C.", nullptr));
         label_8->setText(QCoreApplication::translate("EmplDirector", "\320\242\320\265\320\273\320\265\321\204\320\276\320\275:", nullptr));
         edtPhone->setText(QCoreApplication::translate("EmplDirector", "70001112233", nullptr));
         label_9->setText(QCoreApplication::translate("EmplDirector", "\320\227\320\260\321\200\320\277\320\273\320\260\321\202\320\260:", nullptr));

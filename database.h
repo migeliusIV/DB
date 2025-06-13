@@ -64,6 +64,8 @@ public:
     void loadDirectBrokersToTable(QTableWidget*);
     QString appendDirectorsBroker(QString, QString, QString, QString);
     QString appendDirectorsEmployee(QString, QString, QString, QString, QString = "", QString = "");
+    void deleteDirectorsBroker(QString, QString);
+    void deleteDirectorsEmployee(QString, QString);
     //Password window
     void setPassword(QString, QString);
 };

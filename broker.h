@@ -38,7 +38,6 @@ private slots:
     void on_btnStocks_clicked();
     void on_btnBack_clicked();
     void on_btnAccept_clicked();
-    void on_btnBudgetOper_clicked();
     void on_btnReports_clicked();
 };
 

@@ -14,7 +14,6 @@ Broker::Broker(DataBase* temp, QString strLogin, QWidget *parent)
     setDataBase(temp);
     // visual
     ui->frmAccAppend->hide();
-    ui->frmBudget->hide();
     base->InnFillingCmb(ui->comboBox, login);
     base->brokerFormInit(login, ui->lblCompanyNameTxt, ui->lblINNTxt, ui->lblAccountTxt, ui->lblCheckTxt);  // statistics
     QTableWidget* operationsTable = ui->tblOutput;                                                          // Box field relative
@@ -55,19 +54,9 @@ void Broker::on_btnUserChanges_clicked()
 void Broker::on_btnAccountAppend_clicked()
 {
     if (!ui->frmAccAppend->isVisible()) {
-        ui->frmBudget->hide();
         ui->frmAccAppend->show();
     } else
         ui->frmAccAppend->hide();// форма для регистрации счёта    
-}
-
-void Broker::on_btnBudgetOper_clicked()
-{
-    if (!ui->frmBudget->isVisible()) {
-        ui->frmAccAppend->hide();
-        ui->frmBudget->show();
-    } else
-        ui->frmBudget->hide();// форма для регистрации счёта
 }
 
 void Broker::on_btnAccept_clicked()

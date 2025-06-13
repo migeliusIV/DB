@@ -1254,9 +1254,18 @@ QString DataBase::appendDirectorsBroker(QString INN, QString name, QString login
     if (query.value(0).toString() == login)
         return "Пользователь с указанным логином уже существует.";
 
+    query.prepare("SELECT b.inn "
+                  "FROM Broker b "
+                  "WHERE b.INN = :inn ");
+    query.bindValue(":inn", INN);
+    query.exec();
+    query.next();
+    if (query.value(0).toString() == INN)
+        return "Пользователь с указанным ИНН уже существует.";
+
     // Добавление в АИС пользователя
     query.prepare("INSERT INTO AISUser (login, passw, user_type) "
-                  "VALUES (:log, :pass, 'operator') ");
+                  "VALUES (:log, :pass, 'broker') ");
     query.bindValue(":log", login);
     query.bindValue(":pass", password);
     query.exec();
@@ -1297,6 +1306,15 @@ QString DataBase::appendDirectorsEmployee(QString FIO, QString phone, QString sa
         if (query.value(0).toString() == login)
             return "Пользователь с указанным логином уже существует.";
 
+        query.prepare("SELECT e.phone "
+                      "FROM Employee e "
+                      "WHERE e.phone = :phone ");
+        query.bindValue(":phone", phone);
+        query.exec();
+        query.next();
+        if (query.value(0).toString() == phone)
+            return "Пользователь с указанным номером телефона уже существует.";
+
         query.prepare("INSERT INTO AISUser (login, passw, user_type) "
                        "VALUES (:log, :pass, 'operator') ");
         query.bindValue(":log", login);
@@ -1323,4 +1341,32 @@ QString DataBase::appendDirectorsEmployee(QString FIO, QString phone, QString sa
         return "Не удалось добавить сотрудника!";
 
     return "Успех";
+}
+
+void DataBase::deleteDirectorsEmployee(QString phone, QString login){
+    QSqlQuery query(db);
+    query.prepare("DELETE FROM Employee e "
+                  "WHERE e.phone = :phone ");
+    query.bindValue(":phone", phone);
+    query.exec();
+
+    if (login != ""){
+        query.prepare("DELETE FROM AISUser ais "
+                      "WHERE ais.login = :login ");
+        query.bindValue(":login", login);
+        query.exec();
+    }
+}
+
+void DataBase::deleteDirectorsBroker(QString inn, QString login){
+    QSqlQuery query(db);
+    query.prepare("DELETE FROM Broker b "
+                  "WHERE b.inn = :inn ");
+    query.bindValue(":inn", inn);
+    query.exec();
+
+    query.prepare("DELETE FROM AISUser ais "
+                  "WHERE ais.login = :login ");
+    query.bindValue(":login", login);
+    query.exec();
 }

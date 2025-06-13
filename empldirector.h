@@ -18,6 +18,7 @@ private:
 
 public:
     QString login;
+    int outputMode;
     void setDataBase(DataBase* temp){base = temp;}
     DataBase* getDataBase() const {return base;}
     explicit EmplDirector(DataBase*, QString, QWidget *parent = nullptr);
@@ -33,6 +34,7 @@ private slots:
     void on_btnAppendBroker_clicked();
     void on_btnAppendEmployee_clicked();
     void on_chkOperator_checkStateChanged(const Qt::CheckState &arg1);
+    void on_btnDeleteUser_clicked();
 };
 
 #endif // EMPLDIRECTOR_H

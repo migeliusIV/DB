@@ -9,6 +9,7 @@ EmplDirector::EmplDirector(DataBase* temp, QString strLogin, QWidget *parent)
 {
     ui->setupUi(this);
     login = strLogin;
+    outputMode = 0;
     setDataBase(temp);
     ui->frmOutput->hide();
     ui->tabUserAppend->hide();
@@ -39,8 +40,10 @@ void EmplDirector::on_btnRepresentUsers_clicked()
 
 void EmplDirector::on_btnAppendUser_clicked()
 {
-    if (ui->frmOutput->isVisible())
+    if (ui->frmOutput->isVisible()){
         ui->frmOutput->hide();
+        outputMode = 0;
+    }
     if (!ui->tabUserAppend->isVisible()) {
         // чистка полей "брокера"
         ui->edtINN->clear();
@@ -63,12 +66,14 @@ void EmplDirector::on_btnAppendUser_clicked()
 
 void EmplDirector::on_btnDepsBrokers_clicked()
 {
+    outputMode = 1;
     base->loadDirectBrokersToTable(ui->tblOutput);
 }
 
 
 void EmplDirector::on_btnDepsOpers_clicked()
 {
+    outputMode = 2;
     base->loadDirectEmployeesToTable(ui->tblOutput);
 }
 
@@ -154,3 +159,62 @@ void EmplDirector::on_chkOperator_checkStateChanged(const Qt::CheckState &arg1)
         ui->edtPost->setDisabled(false);
     }
 }
+
+void EmplDirector::on_btnDeleteUser_clicked()
+{
+    // Получаем таблицу из интерфейса
+    QTableWidget* table = ui->tblOutput;
+
+    // Проверяем, есть ли выбранные строки
+    if (table->selectedItems().isEmpty() || outputMode == 0) {
+        QMessageBox::warning(this, "Ошибка", "Не выбрана ни одна строка!");
+        return;
+    }
+
+    // Создаем диалог подтверждения
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Подтверждение изнений",
+                                  QString("Вы уверены, что хотите удалить пользователя?\nЭто действие нельзя отменить."),
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    // Если пользователь подтвердил изменения
+    if (reply == QMessageBox::Yes) {
+        // Получаем первую выбранную строку
+        int selectedRow = table->currentRow();
+        if (outputMode == 1) {
+            // Получаем значение из первого столбца выбранной строки
+            QTableWidgetItem* inn = table->item(selectedRow, 0);
+            QTableWidgetItem* login = table->item(selectedRow, 2);
+            if (!inn || !login) {
+                QMessageBox::warning(this, "Ошибка", "Не удалось получить данные из таблицы!");
+                return;
+            }
+            // Сохраняем значение
+            QString strInn = inn->text();
+            QString strLogin = login->text();
+            qDebug() << "Выбранное значение1:" << strInn; // debug
+            qDebug() << "Выбранное значение2:" << strLogin; // debug
+            // Удаление записи
+            base->deleteDirectorsBroker(strInn, strLogin);
+            base->loadDirectBrokersToTable(ui->tblOutput);
+        } else {
+            // Получаем значение из первого столбца выбранной строки
+            QTableWidgetItem* phone = table->item(selectedRow, 1);
+            QTableWidgetItem* login = table->item(selectedRow, 4);
+            if (!phone || !login) {
+                QMessageBox::warning(this, "Ошибка", "Не удалось получить данные из таблицы!");
+                return;
+            }
+            // Сохраняем значение
+            QString strPhone = phone->text();
+            QString strLogin = login->text();
+            qDebug() << "Выбранное значение1:" << strPhone; // debug
+            qDebug() << "Выбранное значение2:" << strLogin; // debug
+            // Удаление записи
+            base->deleteDirectorsEmployee(strPhone, strLogin);
+            base->loadDirectEmployeesToTable(ui->tblOutput);
+        }
+    } else
+        return;
+}
+
