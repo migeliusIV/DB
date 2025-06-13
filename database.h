@@ -61,6 +61,8 @@ public:
     bool checkSufficientStocksForOperation(int);
     //HR
     //Director
+    void loadDirectEmployeesToTable(QTableWidget*);
+    void loadDirectBrokersToTable(QTableWidget*);
     //Password window
     void setPassword(QString, QString);
 };

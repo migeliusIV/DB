@@ -26,6 +26,13 @@ public:
 private slots:
     void on_btnBack_clicked();
 
+    void on_btnRepresentUsers_clicked();
+    void on_btnAppendUser_clicked();
+    void on_btnDepsBrokers_clicked();
+    void on_btnDepsOpers_clicked();
+    void on_btnAppendBroker_clicked();
+    void on_btnAppendEmployee_clicked();
+    void on_chkOperator_checkStateChanged(const Qt::CheckState &arg1);
 };
 
 #endif // EMPLDIRECTOR_H

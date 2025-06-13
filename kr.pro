@@ -9,7 +9,6 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    accountsmanager.cpp \
     broker.cpp \
     centrdepwindow.cpp \
     database.cpp \
@@ -21,7 +20,6 @@ SOURCES += \
     passwchange.cpp
 
 HEADERS += \
-    accountsmanager.h \
     broker.h \
     centrdepwindow.h \
     database.h \
@@ -32,7 +30,6 @@ HEADERS += \
     passwchange.h
 
 FORMS += \
-    accountsmanager.ui \
     broker.ui \
     centrdepwindow.ui \
     empldirector.ui \

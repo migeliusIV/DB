@@ -1,4 +1,3 @@
-debug/accountsmanager.o
 debug/broker.o
 debug/centrdepwindow.o
 debug/database.o
@@ -9,7 +8,6 @@ debug/main.o
 debug/mainwindow.o
 debug/passwchange.o
 debug/qrc_qmake_qmake_qm_files.o
-debug/moc_accountsmanager.o
 debug/moc_broker.o
 debug/moc_centrdepwindow.o
 debug/moc_empldirector.o

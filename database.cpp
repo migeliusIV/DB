@@ -983,6 +983,7 @@ void DataBase::loadDealsRequests(QTableWidget* tableWidget, int mode){
     // Настройка таблицы
     tableWidget->clear();
     tableWidget->setRowCount(0);
+    tableWidget->setColumnCount(8);
 
     // Установка заголовков
     QStringList headers = {
@@ -1163,3 +1164,82 @@ void DataBase::setPassword(QString login, QString newPassword){
 
 //-------HR-----------
 //-----Director-------
+void DataBase::loadDirectEmployeesToTable(QTableWidget* tableWidget){
+    QSqlQuery query(db);
+    // Настройка таблицы
+    tableWidget->clear();
+    tableWidget->setRowCount(0);
+    tableWidget->setColumnCount(6);
+
+    // Установка заголовков
+    QStringList headers = {
+        "ФИО сотрудника", "Телефон", "Зарплата", "Должность", "Логин пользователя", "Пароль"
+    };
+    tableWidget->setColumnCount(headers.size());
+    tableWidget->setHorizontalHeaderLabels(headers);
+    tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    query.prepare("SELECT e.FIO_empl, e.phone, e.salary, e.post, ais.login, ais.passw "
+                  "From Employee e "
+                  "LEFT JOIN AISUser ais ON ais.id_user = e.id_user"
+                  );
+    if (!query.exec()) {
+        qDebug() << "Ошибка:" << query.lastError().text();
+        return;
+    }
+
+    while (query.next()) {
+        int row = tableWidget->rowCount();
+        tableWidget->insertRow(row);
+
+        tableWidget->setItem(row, 0, new QTableWidgetItem(query.value("FIO_empl").toString()));
+        tableWidget->setItem(row, 1, new QTableWidgetItem(query.value("phone").toString()));
+        tableWidget->setItem(row, 2, new QTableWidgetItem(query.value("salary").toString()));
+        tableWidget->setItem(row, 3, new QTableWidgetItem(query.value("post").toString()));
+        tableWidget->setItem(row, 4, new QTableWidgetItem(query.value("login").toString()));
+        tableWidget->setItem(row, 5, new QTableWidgetItem(query.value("passw").toString()));
+    }
+    // Автоподгон ширины столбцов
+    tableWidget->resizeColumnsToContents();
+    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+}
+
+void DataBase::loadDirectBrokersToTable(QTableWidget* tableWidget){
+    QSqlQuery query(db);
+    // Настройка таблицы
+    tableWidget->clear();
+    tableWidget->setRowCount(0);
+    tableWidget->setColumnCount(4);
+
+    // Установка заголовков
+    QStringList headers = {
+        "ИНН брокера", "Название брокера", "Логин пользователя", "Пароль"
+    };
+    tableWidget->setColumnCount(headers.size());
+    tableWidget->setHorizontalHeaderLabels(headers);
+    tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    query.prepare("SELECT b.INN, b.broker_name, ais.login, ais.passw "
+                  "From Broker b "
+                  "JOIN AISUser ais ON ais.id_user = b.id_user"
+                  );
+    if (!query.exec()) {
+        qDebug() << "Ошибка:" << query.lastError().text();
+        return;
+    }
+
+    while (query.next()) {
+        int row = tableWidget->rowCount();
+        tableWidget->insertRow(row);
+
+        tableWidget->setItem(row, 0, new QTableWidgetItem(query.value("INN").toString()));
+        tableWidget->setItem(row, 1, new QTableWidgetItem(query.value("broker_name").toString()));
+        tableWidget->setItem(row, 2, new QTableWidgetItem(query.value("login").toString()));
+        tableWidget->setItem(row, 3, new QTableWidgetItem(query.value("passw").toString()));
+    }
+    // Автоподгон ширины столбцов
+    tableWidget->resizeColumnsToContents();
+    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
