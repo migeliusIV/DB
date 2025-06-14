@@ -151,36 +151,23 @@
        <string>Выберите ещё не рассмотренную операцию:</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnDealCheck">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>25</y>
-        <width>71</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Проверить</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btnDealReject">
       <property name="geometry">
        <rect>
-        <x>530</x>
+        <x>450</x>
         <y>25</y>
         <width>71</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>Отклонить</string>
+       <string>Отложить</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btnDealAccept">
       <property name="geometry">
        <rect>
-        <x>600</x>
+        <x>520</x>
         <y>25</y>
         <width>71</width>
         <height>24</height>
@@ -247,13 +234,13 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="btnRejectAccount">
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>10</y>
+        <y>9</y>
         <width>80</width>
-        <height>24</height>
+        <height>26</height>
        </rect>
       </property>
       <property name="text">
@@ -278,7 +265,7 @@
        <string>Новые</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnDealsAll_3">
+     <widget class="QPushButton" name="btnStocksAll">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -291,7 +278,7 @@
        <string>Все</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnAccntsNew_3">
+     <widget class="QPushButton" name="btnStocksNew">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -339,20 +326,20 @@
       <rect>
        <x>0</x>
        <y>52</y>
-       <width>111</width>
+       <width>121</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Табельный номер:</string>
+      <string>Телефонный номер:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="lblINNTxt">
+    <widget class="QLabel" name="lblPhone">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>120</x>
        <y>50</y>
-       <width>91</width>
+       <width>81</width>
        <height>20</height>
       </rect>
      </property>
@@ -360,23 +347,26 @@
       <string>TextLabel</string>
      </property>
     </widget>
-    <widget class="QLabel" name="lblCompanyNameTxt">
+    <widget class="QLabel" name="lblFIO">
      <property name="geometry">
       <rect>
        <x>32</x>
        <y>30</y>
-       <width>151</width>
+       <width>141</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
       <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QPushButton" name="btnUserChanges">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>50</x>
        <y>70</y>
        <width>111</width>
        <height>24</height>
@@ -391,7 +381,7 @@
       <rect>
        <x>0</x>
        <y>10</y>
-       <width>171</width>
+       <width>211</width>
        <height>16</height>
       </rect>
      </property>
@@ -402,7 +392,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Данные о сотруднике:</string>
+      <string>Данные об операционисте:</string>
      </property>
     </widget>
    </widget>

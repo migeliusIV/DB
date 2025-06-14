@@ -45,9 +45,15 @@ static constexpr auto qt_meta_stringdata_ZN12EmplOperatorE = QtMocHelpers::strin
     "on_btnDealsAll_clicked",
     "on_btnDealsNew_clicked",
     "on_btnDealsReport_clicked",
-    "on_btnDealCheck_clicked",
     "on_btnDealReject_clicked",
-    "on_btnDealAccept_clicked"
+    "on_btnDealAccept_clicked",
+    "on_btnStocksAll_clicked",
+    "on_btnStocksNew_clicked",
+    "on_tabWidget_tabBarClicked",
+    "index",
+    "on_btnAccntsAll_clicked",
+    "on_btnAccntsNew_clicked",
+    "on_btnRejectAccount_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -59,7 +65,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN12EmplOperatorE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,14 +73,19 @@ Q_CONSTINIT static const uint qt_meta_data_ZN12EmplOperatorE[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   62,    2, 0x08,    1 /* Private */,
-       3,    0,   63,    2, 0x08,    2 /* Private */,
-       4,    0,   64,    2, 0x08,    3 /* Private */,
-       5,    0,   65,    2, 0x08,    4 /* Private */,
-       6,    0,   66,    2, 0x08,    5 /* Private */,
-       7,    0,   67,    2, 0x08,    6 /* Private */,
-       8,    0,   68,    2, 0x08,    7 /* Private */,
-       9,    0,   69,    2, 0x08,    8 /* Private */,
+       1,    0,   92,    2, 0x08,    1 /* Private */,
+       3,    0,   93,    2, 0x08,    2 /* Private */,
+       4,    0,   94,    2, 0x08,    3 /* Private */,
+       5,    0,   95,    2, 0x08,    4 /* Private */,
+       6,    0,   96,    2, 0x08,    5 /* Private */,
+       7,    0,   97,    2, 0x08,    6 /* Private */,
+       8,    0,   98,    2, 0x08,    7 /* Private */,
+       9,    0,   99,    2, 0x08,    8 /* Private */,
+      10,    0,  100,    2, 0x08,    9 /* Private */,
+      11,    1,  101,    2, 0x08,   10 /* Private */,
+      13,    0,  104,    2, 0x08,   12 /* Private */,
+      14,    0,  105,    2, 0x08,   13 /* Private */,
+      15,    0,  106,    2, 0x08,   14 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -82,6 +93,11 @@ Q_CONSTINIT static const uint qt_meta_data_ZN12EmplOperatorE[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   12,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -108,11 +124,22 @@ Q_CONSTINIT const QMetaObject EmplOperator::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_btnDealsReport_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_btnDealCheck_clicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_btnDealReject_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_btnDealAccept_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnStocksAll_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnStocksNew_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_tabWidget_tabBarClicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'on_btnAccntsAll_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnAccntsNew_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnRejectAccount_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -128,13 +155,17 @@ void EmplOperator::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 2: _t->on_btnDealsAll_clicked(); break;
         case 3: _t->on_btnDealsNew_clicked(); break;
         case 4: _t->on_btnDealsReport_clicked(); break;
-        case 5: _t->on_btnDealCheck_clicked(); break;
-        case 6: _t->on_btnDealReject_clicked(); break;
-        case 7: _t->on_btnDealAccept_clicked(); break;
+        case 5: _t->on_btnDealReject_clicked(); break;
+        case 6: _t->on_btnDealAccept_clicked(); break;
+        case 7: _t->on_btnStocksAll_clicked(); break;
+        case 8: _t->on_btnStocksNew_clicked(); break;
+        case 9: _t->on_tabWidget_tabBarClicked((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 10: _t->on_btnAccntsAll_clicked(); break;
+        case 11: _t->on_btnAccntsNew_clicked(); break;
+        case 12: _t->on_btnRejectAccount_clicked(); break;
         default: ;
         }
     }
-    (void)_a;
 }
 
 const QMetaObject *EmplOperator::metaObject() const
@@ -156,14 +187,14 @@ int EmplOperator::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 13;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 13)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 8;
+        _id -= 13;
     }
     return _id;
 }

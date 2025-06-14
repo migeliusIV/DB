@@ -36,17 +36,15 @@ public:
     //MainWindow
     int SelectAISUser(QString, QString);
     //Central depository
-    void loadStockDataToTable(QTableWidget*);
-    void loadOperationsDataToTable(QTableWidget*);
-    void loadAccountsDataToTable(QTableWidget*);
+    void loadStockDataToTable(QTableWidget*, QString = "new");
+    void loadOperationsDataToTable(QTableWidget*, QString = "center", QString = "all");
+    void loadAccountsDataToTable(QTableWidget*, QString = "all");
     bool exportReleasedStocksToCSV(const QString&);
     bool importReleasedStocksFromCSV(const QString&);
     bool importOperationsFromCSV(const QString&);
     bool rejectAccount(QString);
     QString acceptAccount(QString, QString);
     QString getAccStatus(QString);
-    // QString функция для назначения депо счёта
-    // переписать функцию для заполнения комбобокса
     //Broker
     void loadBrokersOperationsDataToTable(QString, QTableWidget*, QString = "");   // вывод связанных операций
     void loadBrokersAccountDataToTable(QString, QTableWidget*, QString = "");     // вывод связанных счетов
@@ -58,7 +56,10 @@ public:
     void InnFillingCmb(QComboBox*, QString="");                         // Перезаполнение ComboBox'a
     //Operator
     void loadDealsRequests(QTableWidget*, int = 0);
-    bool checkSufficientStocksForOperation(int);
+    void windowInit(QString, QLabel*, QLabel*);
+    void idFillingCmb(QComboBox*);
+    QString setAcceptOperation(QString);
+    QString setFreezeOperation(QString);
     //Director
     void loadDirectEmployeesToTable(QTableWidget*);
     void loadDirectBrokersToTable(QTableWidget*);
@@ -68,6 +69,8 @@ public:
     void deleteDirectorsEmployee(QString, QString);
     //Password window
     void setPassword(QString, QString);
+    // Universe
+    void createReport(QString, QString, QString); // path, header, text
 };
 
 #endif // DATABASE_H

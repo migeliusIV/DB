@@ -24,7 +24,7 @@ DataBase::~DataBase(){
     db.close();
 }
 
-//-------MainWindow------------
+//------------[MainWindow]--------------
 int DataBase::SelectAISUser(QString login, QString password){
     QSqlQuery query;
     query.prepare("SELECT passw, user_type FROM AISUser WHERE login = :login");
@@ -44,19 +44,18 @@ int DataBase::SelectAISUser(QString login, QString password){
                 return 2;
             else if (userType == "operator")
                 return 3;
-            else if (userType == "hr")
-                return 4;
             else if (userType == "director")
-                return 5;
+                return 4;
         } else {
             return -2; // неправильный пароль
         }
     } else {
         return -1;
     }
+    return 0;
 }
-//-------Central depository----------
-void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
+//----------[Central depository]----------
+void DataBase::loadStockDataToTable(QTableWidget *tableWidget, QString filter)
 {
     if (tableSelectionConnection != nullptr)
         QObject::disconnect(tableSelectionConnection);
@@ -84,13 +83,20 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
 
     // Выполнение запроса
     QSqlQuery query(db);
-    if (!query.exec("SELECT stock_type, ticker, ISIN, price, st_status "
-                    "FROM Stock s "
-                    "WHERE s.st_status = 'получена' OR s.st_status = 'отдана' ")) {
-        qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
-        return;
+    if (filter == "new"){
+        if (!query.exec("SELECT stock_type, ticker, ISIN, price, st_status "
+                        "FROM Stock s "
+                        "WHERE s.st_status = 'получена' OR s.st_status = 'отдана' ")) {
+            qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+            return;
+        }
+    } else {
+        if (!query.exec("SELECT stock_type, ticker, ISIN, price, st_status "
+                        "FROM Stock s ")) {
+            qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+            return;
+        }
     }
-
     // Заполнение таблицы данными
     while (query.next()) {
         int row = tableWidget->rowCount();
@@ -126,23 +132,37 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget)
     });
 }
 
-void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
+void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget, QString user, QString filter)
 {
     if (tableSelectionConnection != nullptr)
         QObject::disconnect(tableSelectionConnection);
 
     if (!tableWidget) return;
 
-    // Настройка таблицы
-    tableWidget->clear();
-    tableWidget->setRowCount(0);
-    tableWidget->setColumnCount(6);
+    QStringList headers;
+    if (user == "center") {
+        // Настройка таблицы
+        tableWidget->clear();
+        tableWidget->setRowCount(0);
+        tableWidget->setColumnCount(6);
 
-    // Установка заголовков
-    QStringList headers = {
-        "№депо продавца", "№депо покупателя", "Сумма",
-        "Ценные бумаги", "Дата", "Статус"
-    };
+        // Установка заголовков
+        headers = {
+            "№депо продавца", "№депо покупателя", "Сумма",
+            "Ценные бумаги", "Дата", "Статус"
+        };
+    } else {
+        // Настройка таблицы
+        tableWidget->clear();
+        tableWidget->setRowCount(0);
+        tableWidget->setColumnCount(7);
+
+        // Установка заголовков
+        headers = {
+            "ID операции", "№депо продавца", "№депо покупателя",
+            "Сумма", "Ценные бумаги", "Дата", "Статус"
+        };
+    }
     tableWidget->setHorizontalHeaderLabels(headers);
 
     // Настройка внешнего вида
@@ -154,9 +174,35 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
 
     // Выполнение запроса
     QSqlQuery query(db);
-    if (!query.exec("SELECT depo_saler, depo_buyer, summary_cost, "
-                    "stocks_ISINS, date, status "
-                    "FROM Operations ")) {
+    QString queryText;
+    int posDepSel = 0;
+    int posDepBuy = 1;
+    int posSum = 2;
+    int posISINS = 3;
+    int posDate = 4;
+    int posStatus = 5;
+    if (user == "center"){
+        queryText = "SELECT depo_saler, depo_buyer, summary_cost, "
+                        "stocks_ISINS, date, status "
+                        "FROM Operations ";
+
+    } else {
+        queryText = "SELECT id_operation, depo_saler, depo_buyer, "
+                    "summary_cost, stocks_ISINS, date, status "
+                    "FROM Operations ";
+        posDepSel++;
+        posDepBuy++;
+        posSum++;
+        posISINS++;
+        posDate++;
+        posStatus++;
+    }
+
+    if (filter == "new")
+        queryText += "WHERE status = 0 OR status = 2 ";
+
+    query.prepare(queryText);
+    if (!query.exec()) {
         qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
         return;
     }
@@ -166,68 +212,74 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget)
         int row = tableWidget->rowCount();
         tableWidget->insertRow(row);
 
+        if (user != "center"){
+            tableWidget->setItem(row, 0, new QTableWidgetItem(query.value(0).toString()));
+        }
+
         // Seller Account
         QTableWidgetItem *sellerItem = new QTableWidgetItem();
         sellerItem->setData(Qt::DisplayRole,
                             query.value("depo_saler").isNull() ? 0 :
                                 query.value("depo_saler").toInt());
-        tableWidget->setItem(row, 0, sellerItem);
+        tableWidget->setItem(row, posDepSel, sellerItem);
 
         // Buyer Account
         QTableWidgetItem *buyerItem = new QTableWidgetItem();
         buyerItem->setData(Qt::DisplayRole, query.value("depo_buyer").toInt());
-        tableWidget->setItem(row, 1, buyerItem);
+        tableWidget->setItem(row, posDepBuy, buyerItem);
 
         // Amount (с форматированием)
         QTableWidgetItem *amountItem = new QTableWidgetItem();
         amountItem->setData(Qt::DisplayRole, query.value("summary_cost").toDouble());
         amountItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        tableWidget->setItem(row, 2, amountItem);
+        tableWidget->setItem(row, posSum, amountItem);
 
         // Securities (ISIN коды)
         QString isins = query.value("stocks_ISINS").toString();
         isins = isins.mid(1, isins.length()-2).replace("\"", ""); // Форматирование массива
-        tableWidget->setItem(row, 3, new QTableWidgetItem(isins));
+        tableWidget->setItem(row, posISINS, new QTableWidgetItem(isins));
 
         // Date
         QDateTime dt = query.value("date").toDateTime();
-        tableWidget->setItem(row, 4, new QTableWidgetItem(dt.toString("dd.MM.yyyy HH:mm")));
+        tableWidget->setItem(row, posDate, new QTableWidgetItem(dt.toString("dd.MM.yyyy HH:mm")));
 
         // Status (с цветовым оформлением)
         QTableWidgetItem *statusItem = new QTableWidgetItem();
         int status = query.value("status").toInt();
-        statusItem->setText((status == 0 || status == 2) ? "Registered" : "Completed");
-        statusItem->setForeground(status == 0 ? QColor(255, 165, 0) : QColor(0, 128, 0));
+        if (status == 0){
+            statusItem->setText("Registered");
+            statusItem->setForeground(QColor(255, 165, 0));
+        } else if (status == 1){
+            statusItem->setText("Completed");
+            statusItem->setForeground(QColor(0, 128, 0));
+        } else {
+            statusItem->setText("Freezed");
+            statusItem->setForeground(QColor(0, 0, 128));
+        }
         statusItem->setFont(QFont("Arial", -1, QFont::Bold));
-        tableWidget->setItem(row, 5, statusItem);
+        tableWidget->setItem(row, posStatus, statusItem);
     }
 
     // Настройка столбцов
     tableWidget->resizeColumnsToContents();
-    tableWidget->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // Securities
-
-    // Подключение обработчика выбора
-    tableSelectionConnection = QObject::connect(tableWidget, &QTableWidget::itemSelectionChanged, [tableWidget]() {
-        auto selected = tableWidget->selectedItems();
-        if (!selected.isEmpty()) {
-            int row = selected.first()->row();
-            QString seller = tableWidget->item(row, 0)->text();
-            QString buyer = tableWidget->item(row, 1)->text();
-            qDebug() << "Выбрана операция между счетами:" << seller << "->" << buyer;
-        }
-    });
+    tableWidget->horizontalHeader()->setSectionResizeMode(posStatus, QHeaderView::Stretch); // Securities
 }
 
-void DataBase::loadAccountsDataToTable(QTableWidget *tableWidget){
+void DataBase::loadAccountsDataToTable(QTableWidget *tableWidget, QString filter){
     if (tableSelectionConnection != nullptr)
         QObject::disconnect(tableSelectionConnection);
 
     QSqlQuery query(db);
-    query.prepare("SELECT a.inn_invest, a.fio_inv, b.broker_name, a.acc_status, ad.depo_num "
-                  "FROM Account a "
-                  "JOIN Broker b ON a.id_broker = b.id_broker "
-                  "LEFT JOIN AccDepo ad ON ad.id_account = a.id_account "
-                  "ORDER BY a.acc_status DESC ");
+    QString queryText = "SELECT a.inn_invest, a.fio_inv, b.broker_name, a.acc_status, ad.depo_num "
+                        "FROM Account a "
+                        "JOIN Broker b ON a.id_broker = b.id_broker "
+                        "LEFT JOIN AccDepo ad ON ad.id_account = a.id_account ";
+
+    if (filter == "new")
+        queryText += "WHERE a.acc_status = 'Зарегистрирован' OR a.acc_status = 'Отклонён'";
+
+    queryText += "ORDER BY a.acc_status DESC ";
+    query.prepare(queryText);
     query.exec();
 
     // Настройка таблицы
@@ -409,8 +461,7 @@ bool DataBase::importReleasedStocksFromCSV(const QString& filePath)
     return true;
 }
 
-bool DataBase::importOperationsFromCSV(const QString& filePath)
-{
+bool DataBase::importOperationsFromCSV(const QString& filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::critical(nullptr, "Ошибка", "Не удалось открыть файл для чтения");
@@ -418,44 +469,56 @@ bool DataBase::importOperationsFromCSV(const QString& filePath)
     }
 
     QTextStream in(&file);
-    in.setEncoding(QStringConverter::Utf8);  // Устанавливаем кодировку UTF-8
+    in.setEncoding(QStringConverter::Utf8);
 
     db.transaction();
 
-    // Пропускаем BOM и заголовок
-    if (!in.atEnd()) {
-        QString line = in.readLine();
-        if (line.startsWith("\xEF\xBB\xBF")) { // Проверка на BOM (Byte Order Mark)
-            line = line.remove(0, 3); // Удаляем BOM
-        }
-        //Пропускаем заголовок
-    }
+    // Пропускаем заголовок
+    if (!in.atEnd()) in.readLine();
 
     while (!in.atEnd()) {
         QString line = in.readLine();
         QStringList fields = line.split(';');
 
-        if (fields.size() < 5) continue;  // Пропускаем строки с недостаточным количеством полей
+        if (fields.size() < 5) continue;
 
-        // Разбираем массив ISIN
-        QStringList isins = fields[3].replace("\"", "").split(",");
-        QString arraySql = "ARRAY['" + isins.join("','") + "']";
+        // Формируем правильный массив для PostgreSQL
+        QString isins = fields[3].replace("\"", "");
+        QString arraySql = "{" + isins.split(",").join(",") + "}"; // Формат: {RU0009024277} или {RU0009029541,RU0009029542}
 
         QSqlQuery query(db);
-        query.prepare("INSERT INTO Operations (depo_buyer, depo_saler, summary_cost, stocks_ISINS, date, status)"
-                      "VALUES(:depo_buyer, :depo_saler, :summary_cost, :stocks_ISINS, :date, :status)");
+        query.prepare("INSERT INTO Operations (depo_buyer, depo_saler, summary_cost, stocks_ISINS, date, status) "
+                      "VALUES (:depo_buyer, :depo_saler, :summary_cost, :stocks_ISINS, :date, :status)");
 
-        query.bindValue(":depo_buyer", fields[0]);
-        query.bindValue(":depo_saler", fields[1]);
-        query.bindValue(":summary_cost", fields[2]);
+        query.bindValue(":depo_buyer", fields[0].isEmpty() ? QVariant() : fields[0]);
+        query.bindValue(":depo_saler", fields[1].isEmpty() ? QVariant() : fields[1]);
+        query.bindValue(":summary_cost", fields[2].toDouble());
+
+        // Вариант 1: Используем строковое представление массива
         query.bindValue(":stocks_ISINS", arraySql);
-        query.bindValue(":date", fields[4]);
-        query.bindValue(":status", "0");
+
+        // Вариант 2: Альтернативный способ с использованием QVariantList
+        // QVariantList isinList;
+        // foreach (const QString &isin, isins.split(",")) {
+        //     isinList << isin.trimmed();
+        // }
+        // query.bindValue(":stocks_ISINS", isinList);
+
+        query.bindValue(":date", QDateTime::fromString(fields[4], "yyyy-MM-dd HH:mm:ss"));
+        query.bindValue(":status", fields.value(5, "0").toInt());
+
+        qDebug() << "Executing query with values:"
+                 << fields[0] << fields[1] << fields[2] << arraySql << fields[4];
 
         if (!query.exec()) {
             db.rollback();
             qDebug() << "Insert error:" << query.lastError().text();
-            QMessageBox::critical(nullptr, "Ошибка", "Ошибка при добавлении записи: " + query.lastError().text());
+            qDebug() << "Failed query:" << query.lastQuery();
+            qDebug() << "Failed line:" << line;
+            QMessageBox::critical(nullptr, "Ошибка",
+                                  QString("Ошибка при добавлении записи:\n%1\n\nСтрока:\n%2")
+                                      .arg(query.lastError().text())
+                                      .arg(line));
             file.close();
             return false;
         }
@@ -520,7 +583,7 @@ QString DataBase::getAccStatus(QString currInn) {
     query.next();
     return query.value(0).toString();
 }
-//-------Broker------------
+//----------[Broker]---------------
 void DataBase::InnFillingCmb(QComboBox* cmbInnAccount, QString login){
     if (login != "") {
         QSqlQuery query(db);
@@ -978,7 +1041,7 @@ QString DataBase::appendBrokerAccount(QString login, QString newINN, QString new
     return "Успешно";
 }
 
-//------Operator-----
+//----------[Operator]---------
 void DataBase::loadDealsRequests(QTableWidget* tableWidget, int mode){
     // Настройка таблицы
     tableWidget->clear();
@@ -1077,78 +1140,7 @@ void DataBase::loadDealsRequests(QTableWidget* tableWidget, int mode){
     });
 }
 
-bool DataBase::checkSufficientStocksForOperation(int operationId)
-{
-    QSqlQuery query(db);
-
-    // Первый запрос - проверка статуса операции и счетов
-    query.prepare(
-        "SELECT o.status, o.id_account_sale, o.id_account_buy "
-        "FROM Operations o "
-        "WHERE o.id_operation = :operation_id"
-        );
-    query.bindValue(":operation_id", operationId);
-
-    if (!query.exec()) {
-        qDebug() << "Ошибка при проверке статуса операции:" << query.lastError().text();
-        return false;
-    }
-
-    // Если есть записи - читаем данные
-    if (query.next()) {
-        int deal_status = query.value("status").toInt();
-        int id_saler = query.value("id_account_sale").toInt();
-        int id_buyer = query.value("id_account_buy").toInt();
-
-        if (id_saler != 0 && id_buyer != 0 && (deal_status == 0 || deal_status == 2)) {
-            qDebug() << "Нет препятствий для совершения транзакции (внутри депозитария).";
-            return true;
-        }
-    } else {
-        qDebug() << "Операция с ID" << operationId << "не найдена.";
-        return false;
-    }
-
-    // Второй запрос - проверка наличия достаточного количества акций
-    query.prepare(
-        "WITH isin_counts AS ("
-        "    SELECT unnest(stocks_ISINS) AS isin, "
-        "           count(*) OVER (PARTITION BY unnest(stocks_ISINS)) AS required_count "
-        "    FROM Operations "
-        "    WHERE id_operation = :operation_id "
-        "    GROUP BY isin"
-        ")"
-        "SELECT ic.isin, ic.required_count, "
-        "       (SELECT COUNT(*) FROM Stock s "
-        "        WHERE s.ISIN = ic.isin AND s.st_status = 'получена') AS available_count "
-        "FROM isin_counts ic"
-        );
-    query.bindValue(":operation_id", operationId);
-
-    if (!query.exec()) {
-        qDebug() << "Ошибка при проверке доступности акций:" << query.lastError().text();
-        return false;
-    }
-
-    // Проверяем для каждого ISIN, что доступно достаточно бумаг
-    while (query.next()) {
-        QString isin = query.value("isin").toString();
-        int required = query.value("required_count").toInt();
-        int available = query.value("available_count").toInt();
-
-        qDebug() << "ISIN:" << isin << "Требуется:" << required << "Доступно:" << available;
-
-        if (available < required) {
-            qDebug() << "Недостаточно бумаг для ISIN:" << isin
-                     << "(нужно:" << required << ", есть:" << available << ")";
-            return false;
-        }
-    }
-
-    return true;
-}
-
-//------Password window------
+//--------[Password window]--------
 void DataBase::setPassword(QString login, QString newPassword){
     QSqlQuery query(db);
 
@@ -1161,7 +1153,7 @@ void DataBase::setPassword(QString login, QString newPassword){
     query.bindValue(":newPass", newPassword);
     query.exec();
 }
-//-----Director-------
+//---------[Director]----------
 void DataBase::loadDirectEmployeesToTable(QTableWidget* tableWidget){
     QSqlQuery query(db);
     // Настройка таблицы
@@ -1369,4 +1361,235 @@ void DataBase::deleteDirectorsBroker(QString inn, QString login){
                   "WHERE ais.login = :login ");
     query.bindValue(":login", login);
     query.exec();
+}
+
+//-------------Operator part2 (test)-------
+void DataBase::windowInit(QString login, QLabel* lblFio, QLabel* lblPhone){
+    QSqlQuery query(db);
+    query.prepare("SELECT e.fio_empl, e.phone "
+                  "FROM Employee e "
+                  "JOIN AISUser ais ON ais.id_user = e.id_user "
+                  "WHERE ais.login = :log");
+
+    query.bindValue(":log", login);
+    query.exec();
+    query.next();
+
+    lblFio->setText(query.value(0).toString());
+    lblPhone->setText(query.value(1).toString());
+}
+
+void DataBase::idFillingCmb(QComboBox* cmbIdOperation){
+    QSqlQuery query(db);
+    query.prepare("SELECT id_operation "
+                  "FROM Operations ");
+    if (query.exec()) {
+        cmbIdOperation->clear();
+        while (query.next()) {
+            QString operationId= query.value(0).toString();
+            cmbIdOperation->addItem(QString(operationId), operationId);
+        }
+    } else {
+        qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
+        //stat_acc->setText("Ошибка запроса");
+        return;
+    }
+}
+
+QString DataBase::setFreezeOperation(QString operationId){
+    QSqlQuery query(db);
+    query.prepare("SELECT status FROM Operations WHERE id_operation = ?");
+    query.addBindValue(operationId.toInt());
+
+    query.exec();
+    query.next();
+    qDebug() << query.value(0).toInt();
+    if (query.value(0).toInt() == 1)
+        return "Операция уже совершена. Невозможно её отложить.";
+
+    query.prepare("UPDATE Operations "
+                  "SET status = 2 "
+                  "WHERE id_operation = :operId");
+    query.bindValue(":operId", operationId);
+    query.exec();
+    return "Успех";
+}
+
+QString DataBase::setAcceptOperation(QString operationId){
+    QSqlQuery query(db);
+    db.transaction(); // Начинаем транзакцию
+
+    try {
+        // 1. Получаем данные операции
+        query.prepare("SELECT depo_buyer, depo_saler, summary_cost, stocks_ISINS "
+                      "FROM Operations WHERE id_operation = ? AND status <> 1");
+        query.addBindValue(operationId.toInt());
+
+        if (!query.exec() || !query.next()) {
+            db.rollback();
+            return "Ошибка: операция не найдена или уже обработана";
+        }
+
+        QString buyerDepo = query.value("depo_buyer").toString();
+        QString sellerDepo = query.value("depo_saler").toString();
+        double cost = query.value("summary_cost").toDouble();
+        QStringList isins = query.value("stocks_ISINS").toString()
+                                .mid(1, query.value("stocks_ISINS").toString().length()-2)
+                                .replace("\"", "").split(",");
+
+        // 2. Проверка бюджета покупателя (если указан депозитарий)
+        if (!buyerDepo.isEmpty()) {
+            query.prepare("SELECT a.budget FROM Account a "
+                          "JOIN AccDepo ad ON a.id_account = ad.id_account "
+                          "WHERE ad.depo_num = ?");
+            query.addBindValue(buyerDepo);
+
+            if (!query.exec() || !query.next()) {
+                db.rollback();
+                return "Ошибка: не найден счет покупателя";
+            }
+
+            double buyerBudget = query.value(0).toDouble();
+            if (buyerBudget < cost) {
+                db.rollback();
+                return "Ошибка: недостаточно средств у покупателя";
+            }
+        }
+
+        // 3. Проверка и списание ценных бумаг у продавца (если указан)
+        if (!sellerDepo.isEmpty()) {
+            // Получаем account_id продавца
+            query.prepare("SELECT id_account FROM AccDepo WHERE depo_num = ?");
+            query.addBindValue(sellerDepo);
+
+            if (!query.exec() || !query.next()) {
+                db.rollback();
+                return "Ошибка: не найден счет продавца";
+            }
+
+            int sellerAccountId = query.value(0).toInt();
+
+            // Проверяем наличие всех ценных бумаг
+            for (const QString& isin : isins) {
+                query.prepare("SELECT 1 FROM Stock WHERE ISIN = ? AND id_account = ?");
+                query.addBindValue(isin.trimmed());
+                query.addBindValue(sellerAccountId);
+
+                if (!query.exec() || !query.next()) {
+                    db.rollback();
+                    return "Ошибка: ценная бумага " + isin + " не найдена у продавца";
+                }
+            }
+
+            // Списание ценных бумаг у продавца
+            for (const QString& isin : isins) {
+                if (!buyerDepo.isEmpty()){
+                    query.prepare("UPDATE Stock SET id_account = NULL, st_status = 'получена' "
+                                  "WHERE ISIN = ? AND id_account = ?");
+                } else {
+                    query.prepare("UPDATE Stock SET id_account = NULL, st_status = 'отдана' "
+                                  "WHERE ISIN = ? AND id_account = ?");
+                }
+                query.addBindValue(isin.trimmed());
+                query.addBindValue(sellerAccountId);
+
+                if (!query.exec()) {
+                    db.rollback();
+                    return "Ошибка при списании ценных бумаг у продавца";
+                }
+            }
+        }
+
+        // 4. Проверка бесхозных ценных бумаг (если продавец не указан)
+        if (sellerDepo.isEmpty()) {
+            for (const QString& isin : isins) {
+                query.prepare("SELECT 1 FROM Stock WHERE ISIN = ? AND id_account IS NULL");
+                query.addBindValue(isin.trimmed());
+
+                if (!query.exec() || !query.next()) {
+                    db.rollback();
+                    return "Ошибка: ценная бумага " + isin + " не найдена среди бесхозных";
+                }
+            }
+        }
+
+        // 5. Переприсвоение ценных бумаг покупателю (если указан)
+        if (!buyerDepo.isEmpty()) {
+            // Получаем account_id покупателя
+            query.prepare("SELECT id_account FROM AccDepo WHERE depo_num = ?");
+            query.addBindValue(buyerDepo);
+
+            if (!query.exec() || !query.next()) {
+                db.rollback();
+                return "Ошибка: не найден счет покупателя";
+            }
+
+            int buyerAccountId = query.value(0).toInt();
+
+            // Присвоение ценных бумаг покупателю
+            for (const QString& isin : isins) {
+                query.prepare("UPDATE Stock SET id_account = ?, st_status = 'присвоена' "
+                              "WHERE ISIN = ? AND (id_account IS NULL OR id_account = ?)");
+                query.addBindValue(buyerAccountId);
+                query.addBindValue(isin.trimmed());
+                query.addBindValue(buyerAccountId);
+
+                if (!query.exec()) {
+                    db.rollback();
+                    return "Ошибка при присвоении ценных бумаг покупателю";
+                }
+            }
+
+            // Обновление бюджета покупателя
+            query.prepare("UPDATE Account SET budget = budget - ? "
+                          "WHERE id_account = ?");
+            query.addBindValue(cost);
+            query.addBindValue(buyerAccountId);
+
+            if (!query.exec()) {
+                db.rollback();
+                return "Ошибка при списании средств у покупателя";
+            }
+        }
+
+        // 6. Обновление бюджета продавца (если указан)
+        if (!sellerDepo.isEmpty()) {
+            // Получаем account_id продавца
+            query.prepare("SELECT id_account FROM AccDepo WHERE depo_num = ?");
+            query.addBindValue(sellerDepo);
+            query.exec();
+            query.next();
+            int sellerAccountId = query.value(0).toInt();
+
+            query.prepare("UPDATE Account SET budget = budget + ? "
+                          "WHERE id_account = ?");
+            query.addBindValue(cost);
+            query.addBindValue(sellerAccountId);
+
+            if (!query.exec()) {
+                db.rollback();
+                return "Ошибка при зачислении средств продавцу";
+            }
+        }
+
+        // 7. Обновление статуса операции
+        query.prepare("UPDATE Operations SET status = 1 WHERE id_operation = ?");
+        query.addBindValue(operationId);
+
+        if (!query.exec()) {
+            db.rollback();
+            return "Ошибка при обновлении статуса операции";
+        }
+
+        db.commit(); // Фиксируем транзакцию
+        return "Успех";
+
+    } catch (...) {
+        db.rollback();
+        return "Неизвестная ошибка при выполнении операции";
+    }
+}
+//-------------[Universe]----------
+void DataBase::createReport(QString path, QString header, QString text){
+
 }

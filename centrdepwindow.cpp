@@ -1,7 +1,6 @@
 #include "centrdepwindow.h"
 #include "./ui_centrdepwindow.h"
 
-// my
 #include "mainwindow.h"
 
 centrdepwindow::centrdepwindow(DataBase* temp, QWidget *parent):

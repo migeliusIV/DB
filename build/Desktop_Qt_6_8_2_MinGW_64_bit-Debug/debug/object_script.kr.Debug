@@ -2,7 +2,6 @@ debug/broker.o
 debug/centrdepwindow.o
 debug/database.o
 debug/empldirector.o
-debug/emplhr.o
 debug/emploperator.o
 debug/main.o
 debug/mainwindow.o
@@ -11,7 +10,6 @@ debug/qrc_qmake_qmake_qm_files.o
 debug/moc_broker.o
 debug/moc_centrdepwindow.o
 debug/moc_empldirector.o
-debug/moc_emplhr.o
 debug/moc_emploperator.o
 debug/moc_mainwindow.o
 debug/moc_passwchange.o

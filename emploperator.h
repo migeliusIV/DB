@@ -18,6 +18,8 @@ private:
 public:
     // temp
     QString login;
+    int outputMode;
+    QString filterMode;
     void setDataBase(DataBase* temp){base = temp;}
     DataBase* getDataBase() const {return base;}
     // class
@@ -32,9 +34,14 @@ private slots:
     void on_btnDealsAll_clicked();
     void on_btnDealsNew_clicked();
     void on_btnDealsReport_clicked();
-    void on_btnDealCheck_clicked();
     void on_btnDealReject_clicked();
     void on_btnDealAccept_clicked();
+    void on_btnStocksAll_clicked();
+    void on_btnStocksNew_clicked();
+    void on_tabWidget_tabBarClicked(int index);
+    void on_btnAccntsAll_clicked();
+    void on_btnAccntsNew_clicked();
+    void on_btnRejectAccount_clicked();
 };
 
 #endif // EMPLOPERATOR_H

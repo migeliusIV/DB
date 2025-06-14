@@ -6,7 +6,6 @@
 #include "broker.h"
 #include "emploperator.h"
 #include "empldirector.h"
-#include "emplhr.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -68,13 +67,7 @@ void MainWindow::on_btnEnter_clicked()
         this->close();
         break;
     }
-    case 4: { // hr
-        EmplHR *window = new EmplHR(getDataBase(), login);
-        window->show();
-        this->close();
-        break;
-    }
-    case 5: { // director
+    case 4: { // director
         EmplDirector *window = new EmplDirector(getDataBase(), login);
         window->show();
         this->close();
