@@ -12,7 +12,6 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
-#include <QtWidgets/QDateEdit>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -35,16 +34,10 @@ public:
     QWidget *tab;
     QPushButton *btnDealsAll;
     QPushButton *btnDealsNew;
-    QPushButton *btnDealsReport;
-    QLabel *label;
-    QDateEdit *dateEdit;
-    QDateEdit *dateEdit_2;
-    QLabel *label_2;
     QComboBox *comboBox;
     QLabel *label_3;
     QPushButton *btnDealReject;
     QPushButton *btnDealAccept;
-    QLabel *label_4;
     QWidget *tab_2;
     QPushButton *btnAccntsAll;
     QPushButton *btnAccntsNew;
@@ -86,21 +79,6 @@ public:
         btnDealsNew = new QPushButton(tab);
         btnDealsNew->setObjectName("btnDealsNew");
         btnDealsNew->setGeometry(QRect(0, 26, 80, 24));
-        btnDealsReport = new QPushButton(tab);
-        btnDealsReport->setObjectName("btnDealsReport");
-        btnDealsReport->setGeometry(QRect(589, -1, 61, 22));
-        label = new QLabel(tab);
-        label->setObjectName("label");
-        label->setGeometry(QRect(110, 1, 281, 16));
-        dateEdit = new QDateEdit(tab);
-        dateEdit->setObjectName("dateEdit");
-        dateEdit->setGeometry(QRect(410, 0, 81, 21));
-        dateEdit_2 = new QDateEdit(tab);
-        dateEdit_2->setObjectName("dateEdit_2");
-        dateEdit_2->setGeometry(QRect(509, 0, 81, 21));
-        label_2 = new QLabel(tab);
-        label_2->setObjectName("label_2");
-        label_2->setGeometry(QRect(491, 2, 21, 16));
         comboBox = new QComboBox(tab);
         comboBox->setObjectName("comboBox");
         comboBox->setGeometry(QRect(370, 25, 81, 24));
@@ -114,9 +92,6 @@ public:
         btnDealAccept = new QPushButton(tab);
         btnDealAccept->setObjectName("btnDealAccept");
         btnDealAccept->setGeometry(QRect(520, 25, 71, 24));
-        label_4 = new QLabel(tab);
-        label_4->setObjectName("label_4");
-        label_4->setGeometry(QRect(398, 1, 16, 16));
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName("tab_2");
@@ -128,11 +103,11 @@ public:
         btnAccntsNew->setGeometry(QRect(0, 26, 80, 24));
         comboBox_2 = new QComboBox(tab_2);
         comboBox_2->setObjectName("comboBox_2");
-        comboBox_2->setGeometry(QRect(120, 10, 121, 24));
+        comboBox_2->setGeometry(QRect(111, 25, 121, 24));
         comboBox_2->setEditable(true);
         btnRejectAccount = new QPushButton(tab_2);
         btnRejectAccount->setObjectName("btnRejectAccount");
-        btnRejectAccount->setGeometry(QRect(240, 9, 80, 26));
+        btnRejectAccount->setGeometry(QRect(232, 22, 80, 28));
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName("tab_3");
@@ -199,13 +174,9 @@ public:
         EmplOperator->setWindowTitle(QCoreApplication::translate("EmplOperator", "MainWindow", nullptr));
         btnDealsAll->setText(QCoreApplication::translate("EmplOperator", "\320\222\321\201\320\265", nullptr));
         btnDealsNew->setText(QCoreApplication::translate("EmplOperator", "\320\235\320\276\320\262\321\213\320\265", nullptr));
-        btnDealsReport->setText(QCoreApplication::translate("EmplOperator", "\320\223\320\276\321\202\320\276\320\262\320\276", nullptr));
-        label->setText(QCoreApplication::translate("EmplOperator", "\320\224\320\273\321\217 \321\204\320\276\321\200\320\274\320\270\321\200\320\276\320\262\320\260\320\275\320\270\321\217 \320\276\321\202\321\207\321\221\321\202\320\260 \321\203\320\272\320\260\320\266\320\270\321\202\320\265 \320\270\320\275\321\202\320\265\321\200\320\262\320\260\320\273 \320\264\320\260\321\202.", nullptr));
-        label_2->setText(QCoreApplication::translate("EmplOperator", "\320\277\320\276:", nullptr));
         label_3->setText(QCoreApplication::translate("EmplOperator", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\265\321\211\321\221 \320\275\320\265 \321\200\320\260\321\201\321\201\320\274\320\276\321\202\321\200\320\265\320\275\320\275\321\203\321\216 \320\276\320\277\320\265\321\200\320\260\321\206\320\270\321\216:", nullptr));
         btnDealReject->setText(QCoreApplication::translate("EmplOperator", "\320\236\321\202\320\273\320\276\320\266\320\270\321\202\321\214", nullptr));
         btnDealAccept->setText(QCoreApplication::translate("EmplOperator", "\320\236\320\264\320\276\320\261\321\200\320\270\321\202\321\214", nullptr));
-        label_4->setText(QCoreApplication::translate("EmplOperator", "C:", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("EmplOperator", "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\270", nullptr));
         btnAccntsAll->setText(QCoreApplication::translate("EmplOperator", "\320\222\321\201\320\265", nullptr));
         btnAccntsNew->setText(QCoreApplication::translate("EmplOperator", "\320\235\320\276\320\262\321\213\320\265", nullptr));

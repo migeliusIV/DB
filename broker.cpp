@@ -114,6 +114,8 @@ void Broker::on_btnAccountDel_clicked()
 
         // Если пользователь подтвердил удаление
         if (reply == QMessageBox::Yes) {
+            QString inn = depoNum;
+            QString accDepo = base->getAccDepoByInn(inn);
             QString funcRes = base->deleteBrokerAccount(login, depoNum);
             // Удаление выбранного счета
             if (funcRes == "Успешно") {
@@ -121,8 +123,17 @@ void Broker::on_btnAccountDel_clicked()
                 base->loadBrokersAccountDataToTable(login, ui->tblOutput);
                 base->brokerFormUpdate(login, ui->lblAccountTxt, ui->lblCheckTxt);
                 base->InnFillingCmb(ui->comboBox, login);
-                // Опционально: показать сообщение об успешном удалении
-                //QMessageBox::information(this, "Успешно", "Счет был удален.");
+
+
+                if (accDepo != ""){
+                    QString path = "C:/AIS_FS/brokers/" + login;
+                    QString name = "term_contract_inn_" + inn;
+                    QString header = "Расторжение договора №" + inn;
+                    QString text = "Впредь пользователь с ИНН:" + inn + "\n"
+                                   "не зарегистрирован в АИС депозитария 'Лучший партнёр'\n"
+                                    "и указанным депозитарием не обслуживается.";
+                    base->createReport(path, name, header, text);
+                }
             } else {
                 QMessageBox::warning(this, "Ошибка", funcRes);
             }

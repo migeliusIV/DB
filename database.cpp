@@ -65,10 +65,10 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget, QString filter)
     // Очистка и настройка таблицы
     tableWidget->clear();
     tableWidget->setRowCount(0);
-    tableWidget->setColumnCount(5);
+    tableWidget->setColumnCount(6);
 
     // Установка заголовков
-    QStringList headers = {"Тип ЦБ", "Тикер", "ISIN", "Цена", "Статус"};
+    QStringList headers = {"Тип ЦБ", "Тикер", "ISIN", "Цена", "Статус", "Владелец"};
     tableWidget->setHorizontalHeaderLabels(headers);
 
     // Настройка внешнего вида
@@ -84,15 +84,19 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget, QString filter)
     // Выполнение запроса
     QSqlQuery query(db);
     if (filter == "new"){
-        if (!query.exec("SELECT stock_type, ticker, ISIN, price, st_status "
+        if (!query.exec("SELECT s.stock_type, s.ticker, s.ISIN, s.price, s.st_status, a.id_account "
                         "FROM Stock s "
+                        "LEFT JOIN Account a ON a.id_account = s.id_account "
+                        "LEFT JOIN AccDepo ad ON ad.id_account = a.id_account "
                         "WHERE s.st_status = 'получена' OR s.st_status = 'отдана' ")) {
             qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
             return;
         }
     } else {
-        if (!query.exec("SELECT stock_type, ticker, ISIN, price, st_status "
-                        "FROM Stock s ")) {
+        if (!query.exec("SELECT s.stock_type, s.ticker, s.ISIN, s.price, s.st_status, ad.depo_num "
+                        "FROM Stock s "
+                        "LEFT JOIN Account a ON a.id_account = s.id_account "
+                        "LEFT JOIN AccDepo ad ON ad.id_account = a.id_account ")) {
             qDebug() << "Ошибка выполнения запроса:" << query.lastError().text();
             return;
         }
@@ -116,6 +120,7 @@ void DataBase::loadStockDataToTable(QTableWidget *tableWidget, QString filter)
         statusItem->setText(status);
         statusItem->setForeground(status == "получена" ? QColor(0, 128, 0) : QColor(255, 0, 0));
         tableWidget->setItem(row, 4, statusItem);
+        tableWidget->setItem(row, 5, new QTableWidgetItem(query.value("depo_num").toString()));         // ISIN
     }
 
     // Автоподгон ширины колонки ISIN (после заполнения данных)
@@ -183,8 +188,8 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget, QString user
     int posStatus = 5;
     if (user == "center"){
         queryText = "SELECT depo_saler, depo_buyer, summary_cost, "
-                        "stocks_ISINS, date, status "
-                        "FROM Operations ";
+                    "stocks_ISINS, date, status "
+                    "FROM Operations ";
 
     } else {
         queryText = "SELECT id_operation, depo_saler, depo_buyer, "
@@ -200,6 +205,8 @@ void DataBase::loadOperationsDataToTable(QTableWidget *tableWidget, QString user
 
     if (filter == "new")
         queryText += "WHERE status = 0 OR status = 2 ";
+
+    queryText += "ORDER BY date ASC, status ASC ";
 
     query.prepare(queryText);
     if (!query.exec()) {
@@ -992,6 +999,11 @@ QString DataBase::deleteBrokerAccount(QString login, QString innAccountToDelete)
     else if (query.value(2).toInt() > 0)
         return "Счёт не может быть удалён. У владельца остались не проданные ценные бумаги!";
     else {
+        QString depoKey = getAccDepoByInn(innAccountToDelete);
+        query.prepare("Delete FROM AccDepo Where depo_num = :depo");
+        query.bindValue(":depo", depoKey);
+        query.exec();
+
         // Если проверка прошла, удаляем счет
         query.prepare("DELETE FROM Account WHERE inn_invest = :innAccount");
         query.bindValue(":innAccount", innAccountToDelete);
@@ -1415,181 +1427,368 @@ QString DataBase::setFreezeOperation(QString operationId){
     return "Успех";
 }
 
-QString DataBase::setAcceptOperation(QString operationId){
+QString DataBase::setAcceptOperation(QString operationId) {
+    QSqlDatabase::database().transaction();
     QSqlQuery query(db);
-    db.transaction(); // Начинаем транзакцию
 
     try {
         // 1. Получаем данные операции
-        query.prepare("SELECT depo_buyer, depo_saler, summary_cost, stocks_ISINS "
-                      "FROM Operations WHERE id_operation = ? AND status <> 1");
+        query.prepare("SELECT depo_buyer, depo_saler, summary_cost, stocks_ISINS, date, status "
+                      "FROM Operations WHERE id_operation = ?");
         query.addBindValue(operationId.toInt());
 
-        if (!query.exec() || !query.next()) {
-            db.rollback();
-            return "Ошибка: операция не найдена или уже обработана";
+        if (!query.exec()) {
+            throw std::runtime_error("Ошибка запроса операции: " + query.lastError().text().toStdString());
         }
 
-        QString buyerDepo = query.value("depo_buyer").toString();
-        QString sellerDepo = query.value("depo_saler").toString();
-        double cost = query.value("summary_cost").toDouble();
-        QStringList isins = query.value("stocks_ISINS").toString()
-                                .mid(1, query.value("stocks_ISINS").toString().length()-2)
-                                .replace("\"", "").split(",");
+        if (!query.next()) {
+            throw std::runtime_error("Операция не найдена");
+        }
 
-        // 2. Проверка бюджета покупателя (если указан депозитарий)
+        QString buyerDepo = query.value("depo_buyer").toString().trimmed();
+        QString sellerDepo = query.value("depo_saler").toString().trimmed();
+        double cost = query.value("summary_cost").toDouble();
+        QStringList isins;
+        QString isinsStr = query.value("stocks_ISINS").toString();
+        if (!isinsStr.isEmpty()) {
+            isins = isinsStr.mid(1, isinsStr.length()-2).replace("\"", "").split(",");
+        }
+        QDateTime opDate = query.value("date").toDateTime();
+        int status = query.value("status").toInt();
+
+        // Проверка статуса операции
+        if (status == 1) {
+            throw std::runtime_error("Операция уже выполнена");
+        }
+        /*
+        } else if (status == 2) {
+            throw std::runtime_error("Операция заморожена");
+        }
+        */
+
+        qDebug() << "Обработка операции:" << operationId << "Покупатель:" << buyerDepo
+                 << "Продавец:" << sellerDepo << "Сумма:" << cost << "ISINs:" << isins;
+
+        // 2. Проверка счета покупателя (если указан)
+        int buyerAccountId = -1;
         if (!buyerDepo.isEmpty()) {
-            query.prepare("SELECT a.budget FROM Account a "
+            query.prepare("SELECT a.id_account, a.budget FROM Account a "
                           "JOIN AccDepo ad ON a.id_account = ad.id_account "
-                          "WHERE ad.depo_num = ?");
+                          "WHERE ad.depo_num = ? AND a.acc_status = 'Активирован'");
             query.addBindValue(buyerDepo);
 
             if (!query.exec() || !query.next()) {
-                db.rollback();
-                return "Ошибка: не найден счет покупателя";
+                throw std::runtime_error("Не найден активный счет покупателя: " + buyerDepo.toStdString());
             }
 
-            double buyerBudget = query.value(0).toDouble();
+            buyerAccountId = query.value(0).toInt();
+            double buyerBudget = query.value(1).toDouble();
+
             if (buyerBudget < cost) {
-                db.rollback();
-                return "Ошибка: недостаточно средств у покупателя";
+                query.prepare("UPDATE Operations SET status = 2 WHERE id_operation = ?");
+                query.addBindValue(operationId.toInt());
+                if (!query.exec()) {
+                    throw std::runtime_error("Ошибка заморозки операции");
+                }
+                QSqlDatabase::database().commit();
+                return "Операция заморожена: недостаточно средств у покупателя";
             }
         }
 
-        // 3. Проверка и списание ценных бумаг у продавца (если указан)
+        // 3. Проверка счета продавца (если указан)
+        int sellerAccountId = -1;
         if (!sellerDepo.isEmpty()) {
-            // Получаем account_id продавца
-            query.prepare("SELECT id_account FROM AccDepo WHERE depo_num = ?");
+            query.prepare("SELECT a.id_account FROM Account a "
+                          "JOIN AccDepo ad ON a.id_account = ad.id_account "
+                          "WHERE ad.depo_num = ? AND a.acc_status = 'Активирован'");
             query.addBindValue(sellerDepo);
 
             if (!query.exec() || !query.next()) {
-                db.rollback();
-                return "Ошибка: не найден счет продавца";
+                throw std::runtime_error("Не найден активный счет продавца: " + sellerDepo.toStdString());
             }
 
-            int sellerAccountId = query.value(0).toInt();
+            sellerAccountId = query.value(0).toInt();
+        }
 
-            // Проверяем наличие всех ценных бумаг
+        // 4. Проверка более ранних необработанных операций
+        QStringList involvedDepos;
+        if (!buyerDepo.isEmpty()) involvedDepos << buyerDepo;
+        if (!sellerDepo.isEmpty()) involvedDepos << sellerDepo;
+
+        if (!involvedDepos.isEmpty()) {
+            query.prepare("SELECT 1 FROM Operations "
+                          "WHERE status <> 1 AND date < ? AND id_operation != ? AND "
+                          "(depo_buyer = ANY(?) OR depo_saler = ANY(?)) LIMIT 1");
+            query.addBindValue(opDate);
+            query.addBindValue(operationId.toInt());
+            query.addBindValue(involvedDepos);
+            query.addBindValue(involvedDepos);
+
+            if (query.exec() && query.next()) {
+                query.prepare("UPDATE Operations SET status = 2 WHERE id_operation = ?");
+                query.addBindValue(operationId.toInt());
+                if (!query.exec()) {
+                    throw std::runtime_error("Ошибка заморозки операции");
+                }
+                QSqlDatabase::database().commit();
+                return "Операция заморожена: есть более ранние необработанные операции";
+            }
+        }
+
+        // 5. Обработка операций без ценных бумаг (только деньги)
+        if (isins.isEmpty() || isins.first().isEmpty()) {
+            if (sellerAccountId != -1) {
+                // Зачисление средств продавцу
+                query.prepare("UPDATE Account SET budget = budget + ? WHERE id_account = ?");
+                query.addBindValue(cost);
+                query.addBindValue(sellerAccountId);
+                if (!query.exec()) {
+                    throw std::runtime_error("Ошибка зачисления средств продавцу");
+                }
+            } else if (buyerAccountId != -1) {
+                // Списание средств покупателя
+                query.prepare("UPDATE Account SET budget = budget - ? WHERE id_account = ?");
+                query.addBindValue(cost);
+                query.addBindValue(buyerAccountId);
+                if (!query.exec()) {
+                    throw std::runtime_error("Ошибка списания средств покупателя");
+                }
+            }
+
+            query.prepare("UPDATE Operations SET status = 1 WHERE id_operation = ?");
+            query.addBindValue(operationId.toInt());
+            if (!query.exec()) {
+                throw std::runtime_error("Ошибка обновления статуса операции");
+            }
+
+            QSqlDatabase::database().commit();
+            return "Успех";
+        }
+
+        // 6. Обработка операций с ценными бумагами
+        if (sellerAccountId != -1 && buyerAccountId != -1) {
+            // Полная операция (покупатель + продавец)
+            // Проверка наличия бумаг у продавца
             for (const QString& isin : isins) {
                 query.prepare("SELECT 1 FROM Stock WHERE ISIN = ? AND id_account = ?");
                 query.addBindValue(isin.trimmed());
                 query.addBindValue(sellerAccountId);
-
                 if (!query.exec() || !query.next()) {
-                    db.rollback();
-                    return "Ошибка: ценная бумага " + isin + " не найдена у продавца";
+                    throw std::runtime_error("Ценная бумага " + isin.toStdString() + " не найдена у продавца");
                 }
             }
 
-            // Списание ценных бумаг у продавца
+            // Списание бумаг у продавца
             for (const QString& isin : isins) {
-                if (!buyerDepo.isEmpty()){
-                    query.prepare("UPDATE Stock SET id_account = NULL, st_status = 'получена' "
-                                  "WHERE ISIN = ? AND id_account = ?");
-                } else {
-                    query.prepare("UPDATE Stock SET id_account = NULL, st_status = 'отдана' "
-                                  "WHERE ISIN = ? AND id_account = ?");
-                }
+                query.prepare("UPDATE Stock SET id_account = NULL, st_status = 'получена' "
+                              "WHERE ISIN = ? AND id_account = ?");
                 query.addBindValue(isin.trimmed());
                 query.addBindValue(sellerAccountId);
-
                 if (!query.exec()) {
-                    db.rollback();
-                    return "Ошибка при списании ценных бумаг у продавца";
+                    throw std::runtime_error("Ошибка списания ценных бумаг у продавца");
                 }
             }
-        }
 
-        // 4. Проверка бесхозных ценных бумаг (если продавец не указан)
-        if (sellerDepo.isEmpty()) {
+            // Присвоение бумаг покупателю
+            for (const QString& isin : isins) {
+                query.prepare("UPDATE Stock SET id_account = ?, st_status = 'присвоена' "
+                              "WHERE ISIN = ?");
+                query.addBindValue(buyerAccountId);
+                query.addBindValue(isin.trimmed());
+                if (!query.exec()) {
+                    throw std::runtime_error("Ошибка присвоения ценных бумаг покупателю");
+                }
+            }
+
+            // Денежные расчеты
+            query.prepare("UPDATE Account SET budget = budget - ? WHERE id_account = ?");
+            query.addBindValue(cost);
+            query.addBindValue(buyerAccountId);
+            if (!query.exec()) {
+                throw std::runtime_error("Ошибка списания средств у покупателя");
+            }
+
+            query.prepare("UPDATE Account SET budget = budget + ? WHERE id_account = ?");
+            query.addBindValue(cost);
+            query.addBindValue(sellerAccountId);
+            if (!query.exec()) {
+                throw std::runtime_error("Ошибка зачисления средств продавцу");
+            }
+        }
+        else if (sellerAccountId != -1) {
+            // Только продавец
+            // Проверка наличия бумаг у продавца
+            for (const QString& isin : isins) {
+                query.prepare("SELECT 1 FROM Stock WHERE ISIN = ? AND id_account = ?");
+                query.addBindValue(isin.trimmed());
+                query.addBindValue(sellerAccountId);
+                if (!query.exec() || !query.next()) {
+                    throw std::runtime_error("Ценная бумага " + isin.toStdString() + " не найдена у продавца");
+                }
+            }
+
+            // Списание бумаг у продавца
+            for (const QString& isin : isins) {
+                query.prepare("UPDATE Stock SET id_account = NULL, st_status = 'отдана' "
+                              "WHERE ISIN = ? AND id_account = ?");
+                query.addBindValue(isin.trimmed());
+                query.addBindValue(sellerAccountId);
+                if (!query.exec()) {
+                    throw std::runtime_error("Ошибка списания ценных бумаг у продавца");
+                }
+            }
+
+            // Зачисление средств продавцу
+            query.prepare("UPDATE Account SET budget = budget + ? WHERE id_account = ?");
+            query.addBindValue(cost);
+            query.addBindValue(sellerAccountId);
+            if (!query.exec()) {
+                throw std::runtime_error("Ошибка зачисления средств продавцу");
+            }
+        }
+        else if (buyerAccountId != -1) {
+            // Только покупатель
+            // Проверка наличия бесхозных бумаг
             for (const QString& isin : isins) {
                 query.prepare("SELECT 1 FROM Stock WHERE ISIN = ? AND id_account IS NULL");
                 query.addBindValue(isin.trimmed());
-
                 if (!query.exec() || !query.next()) {
-                    db.rollback();
-                    return "Ошибка: ценная бумага " + isin + " не найдена среди бесхозных";
+                    throw std::runtime_error("Ценная бумага " + isin.toStdString() + " не найдена среди бесхозных");
                 }
             }
-        }
 
-        // 5. Переприсвоение ценных бумаг покупателю (если указан)
-        if (!buyerDepo.isEmpty()) {
-            // Получаем account_id покупателя
-            query.prepare("SELECT id_account FROM AccDepo WHERE depo_num = ?");
-            query.addBindValue(buyerDepo);
-
-            if (!query.exec() || !query.next()) {
-                db.rollback();
-                return "Ошибка: не найден счет покупателя";
-            }
-
-            int buyerAccountId = query.value(0).toInt();
-
-            // Присвоение ценных бумаг покупателю
+            // Присвоение бумаг покупателю
             for (const QString& isin : isins) {
                 query.prepare("UPDATE Stock SET id_account = ?, st_status = 'присвоена' "
-                              "WHERE ISIN = ? AND (id_account IS NULL OR id_account = ?)");
+                              "WHERE ISIN = ?");
                 query.addBindValue(buyerAccountId);
                 query.addBindValue(isin.trimmed());
-                query.addBindValue(buyerAccountId);
-
                 if (!query.exec()) {
-                    db.rollback();
-                    return "Ошибка при присвоении ценных бумаг покупателю";
+                    throw std::runtime_error("Ошибка присвоения ценных бумаг покупателю");
                 }
             }
 
-            // Обновление бюджета покупателя
-            query.prepare("UPDATE Account SET budget = budget - ? "
-                          "WHERE id_account = ?");
+            // Списание средств покупателя
+            query.prepare("UPDATE Account SET budget = budget - ? WHERE id_account = ?");
             query.addBindValue(cost);
             query.addBindValue(buyerAccountId);
-
             if (!query.exec()) {
-                db.rollback();
-                return "Ошибка при списании средств у покупателя";
+                throw std::runtime_error("Ошибка списания средств покупателя");
             }
         }
 
-        // 6. Обновление бюджета продавца (если указан)
-        if (!sellerDepo.isEmpty()) {
-            // Получаем account_id продавца
-            query.prepare("SELECT id_account FROM AccDepo WHERE depo_num = ?");
-            query.addBindValue(sellerDepo);
-            query.exec();
-            query.next();
-            int sellerAccountId = query.value(0).toInt();
-
-            query.prepare("UPDATE Account SET budget = budget + ? "
-                          "WHERE id_account = ?");
-            query.addBindValue(cost);
-            query.addBindValue(sellerAccountId);
-
-            if (!query.exec()) {
-                db.rollback();
-                return "Ошибка при зачислении средств продавцу";
-            }
-        }
-
-        // 7. Обновление статуса операции
+        // Обновление статуса операции
         query.prepare("UPDATE Operations SET status = 1 WHERE id_operation = ?");
-        query.addBindValue(operationId);
-
+        query.addBindValue(operationId.toInt());
         if (!query.exec()) {
-            db.rollback();
-            return "Ошибка при обновлении статуса операции";
+            throw std::runtime_error("Ошибка обновления статуса операции");
         }
 
-        db.commit(); // Фиксируем транзакцию
+        QSqlDatabase::database().commit();
         return "Успех";
 
-    } catch (...) {
-        db.rollback();
-        return "Неизвестная ошибка при выполнении операции";
+    } catch (const std::exception& e) {
+        QSqlDatabase::database().rollback();
+        qCritical() << "Ошибка в setAcceptOperation:" << e.what();
+        return QString("Ошибка: %1").arg(e.what());
     }
 }
 //-------------[Universe]----------
-void DataBase::createReport(QString path, QString header, QString text){
+void DataBase::createReport(QString path, QString name, QString header, QString text) {
+    // 1. Проверяем и создаем директорию, если ее нет
+    QDir dir(path);
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {
+            qDebug() << "Ошибка: Не удалось создать директорию:" << path;
+            return;
+        }
+    }
 
+    // 2. Формируем полный путь к файлу
+    QString filePath = dir.filePath(name + ".txt");
+
+    // 3. Создаем объект QFile
+    QFile file(filePath);
+
+    // 4. Открываем файл для записи
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "Ошибка: Не удалось открыть файл для записи:" << filePath << " Ошибка:" << file.errorString();
+        return;
+    }
+
+    // 5. Создаем объект QTextStream для записи в файл
+    QTextStream out(&file);
+    //out.setCodec("UTF-8"); // Устанавливаем кодировку UTF-8
+
+    // 6. Записываем заголовок и текст
+    out << header << "\n\n";
+    out << text;
+
+    // 7. Закрываем файл
+    file.close();
+
+    qDebug() << "Отчет успешно создан:" << filePath;
+}
+
+QString DataBase::getBrokerByInn(QString inn){
+    QSqlQuery query(db);
+    query.prepare("SELECT ais.login "
+                  "FROM AISUser ais "
+                  "LEFT JOIN Broker b ON ais.id_user = b.id_user "
+                  "LEFT JOIN Account a ON b.id_broker = a.id_broker "
+                  "WHERE a.INN_invest = :inn ");
+    query.bindValue(":inn", inn);
+    query.exec();
+    query.next();
+    return query.value(0).toString();
+}
+
+bool DataBase::deleteUserDirectory(QString path) {
+    QDir dir(path);
+
+    // Проверяем существование папки
+    if (!dir.exists()) {
+        qWarning() << "Директория не существует:" << path;
+        return false;
+    }
+
+    // Удаляем все содержимое папки рекурсивно
+    dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    QFileInfoList fileList = dir.entryInfoList();
+
+    for (const QFileInfo &fileInfo : fileList) {
+        if (fileInfo.isDir()) {
+            // Рекурсивный вызов для поддиректорий
+            if (!deleteUserDirectory(fileInfo.absoluteFilePath())) {
+                return false;
+            }
+        } else {
+            // Удаление файлов
+            if (!QFile::remove(fileInfo.absoluteFilePath())) {
+                qWarning() << "Не удалось удалить файл:" << fileInfo.absoluteFilePath();
+                return false;
+            }
+        }
+    }
+
+    // Удаляем саму папку
+    if (!dir.rmdir(dir.absolutePath())) {
+        qWarning() << "Не удалось удалить директорию:" << dir.absolutePath();
+        return false;
+    }
+
+    qDebug() << "Директория успешно удалена:" << path;
+    return true;
+}
+
+QString DataBase::getAccDepoByInn(QString inn){
+    QSqlQuery query(db);
+    query.prepare("SELECT ad.depo_num "
+                  "FROM AccDepo ad "
+                  "LEFT JOIN Account a ON ad.id_account = a.id_account "
+                  "WHERE a.INN_invest = :inn ");
+    query.bindValue(":inn", inn);
+    query.exec();
+    query.next();
+    return query.value(0).toString();
 }

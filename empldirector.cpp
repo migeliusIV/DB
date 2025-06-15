@@ -102,8 +102,15 @@ void EmplDirector::on_btnAppendBroker_clicked()
         QString funcRes = base->appendDirectorsBroker(INN, name, login, password);
         if (funcRes != "Успех")
             QMessageBox::warning(this, "Ошибка", funcRes);
-        else
+        else {
             QMessageBox::information(this, "Успешно", "Брокер добавлен");
+            QString path = "C:/AIS_FS/brokers/" + login;
+            QString fileName = "reg_license_inn" + INN;
+            QString header = "Лицензия №" + INN;
+            QString text = "Согласно данной лицензии, брокеру: " + name + " (ИНН: " + INN + ")\n "
+                           "разрешается использование АИС депозитария 'Лучший партнёр'.";
+            base->createReport(path, fileName, header, text);
+        }
     }
 }
 
@@ -144,8 +151,18 @@ void EmplDirector::on_btnAppendEmployee_clicked()
         QString funcRes = base->appendDirectorsEmployee(FIO, phone, salary, post, login, password);
         if (funcRes != "Успех")
             QMessageBox::warning(this, "Ошибка", funcRes);
-        else
+        else {
             QMessageBox::information(this, "Успешно", "Сотрудник добавлен");
+            if (post == "Операционист") {
+                QString path = "C:/AIS_FS/operators/" + login;
+                QString fileName = "reg_license_inn" + phone;
+                QString header = "Лицензия №" + phone;
+                QString text = "Согласно данной лицензии, сотруднику депозитария: " + FIO + "\n "
+                                "присваивается должность операциониста и разрешается \n"
+                                "использование АИС депозитария 'Лучший партнёр'.";
+                base->createReport(path, fileName, header, text);
+            }
+        }
     }
 }
 
@@ -177,8 +194,11 @@ void EmplDirector::on_btnDeleteUser_clicked()
                                   QString("Вы уверены, что хотите удалить пользователя?\nЭто действие нельзя отменить."),
                                   QMessageBox::Yes | QMessageBox::No);
 
+
     // Если пользователь подтвердил изменения
     if (reply == QMessageBox::Yes) {
+        QString userType;
+        QString strLogin;
         // Получаем первую выбранную строку
         int selectedRow = table->currentRow();
         if (outputMode == 1) {
@@ -191,12 +211,13 @@ void EmplDirector::on_btnDeleteUser_clicked()
             }
             // Сохраняем значение
             QString strInn = inn->text();
-            QString strLogin = login->text();
+            strLogin = login->text();
             qDebug() << "Выбранное значение1:" << strInn; // debug
             qDebug() << "Выбранное значение2:" << strLogin; // debug
             // Удаление записи
             base->deleteDirectorsBroker(strInn, strLogin);
             base->loadDirectBrokersToTable(ui->tblOutput);
+            userType = "brokers";
         } else {
             // Получаем значение из первого столбца выбранной строки
             QTableWidgetItem* phone = table->item(selectedRow, 1);
@@ -207,12 +228,18 @@ void EmplDirector::on_btnDeleteUser_clicked()
             }
             // Сохраняем значение
             QString strPhone = phone->text();
-            QString strLogin = login->text();
+            strLogin = login->text();
             qDebug() << "Выбранное значение1:" << strPhone; // debug
             qDebug() << "Выбранное значение2:" << strLogin; // debug
             // Удаление записи
             base->deleteDirectorsEmployee(strPhone, strLogin);
             base->loadDirectEmployeesToTable(ui->tblOutput);
+            if (strLogin != "")
+                userType = "operators";
+        }
+        if (userType != "") {
+            QString path = "C:/AIS_FS/" + userType + "/" + strLogin;
+            base->deleteUserDirectory(path);
         }
     } else
         return;

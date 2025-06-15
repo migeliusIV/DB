@@ -70,7 +70,10 @@ public:
     //Password window
     void setPassword(QString, QString);
     // Universe
-    void createReport(QString, QString, QString); // path, header, text
+    void createReport(QString, QString, QString, QString); // path, header, text
+    QString getBrokerByInn(QString);
+    QString getAccDepoByInn(QString);
+    bool deleteUserDirectory(QString);
 };
 
 #endif // DATABASE_H

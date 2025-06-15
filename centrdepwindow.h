@@ -36,7 +36,6 @@ private slots:
     void on_btnBack_clicked();
     void on_btnDepoInit_clicked();
     void on_btnAccounts_clicked();
-
     void on_btnReject_clicked();
 
 public slots:

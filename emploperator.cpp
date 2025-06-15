@@ -13,7 +13,7 @@ EmplOperator::EmplOperator(DataBase* temp, QString strLogin, QWidget *parent)
     setDataBase(temp);
     base->windowInit(login, ui->lblFIO, ui->lblPhone);
     base->InnFillingCmb(ui->comboBox_2);
-    outputMode = -1;
+    outputMode = ui->tabWidget->currentIndex();
     filterMode = "all";
     // Account's comboBox filling
     QTableWidget* accountsTable = ui->tblOutput;

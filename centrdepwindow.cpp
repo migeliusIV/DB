@@ -154,6 +154,12 @@ void centrdepwindow::on_btnDepoInit_clicked()
                     return;
                 }
                 base->loadAccountsDataToTable(ui->tblOutput);
+                QString path = "C:/AIS_FS/brokers/" + base->getBrokerByInn(inn);
+                QString name = "reg_contract_inn_" + inn;
+                QString header = "Договор №" + inn;
+                QString text = "Согласно данному договору, центральный депозитарий \n"
+                               "подтверждает регистрацию депозитарием 'Лучший партнёр' пользователя с ИНН:" + inn + ".";
+                base->createReport(path, name, header, text);
             }
         }
     } else
@@ -184,6 +190,12 @@ void centrdepwindow::on_btnReject_clicked()
         if (reply == QMessageBox::Yes) {
             if (!base->rejectAccount(inn))
                 QMessageBox::warning(this, "Ошибка", "Операция не может быть совершена");
+            QString path = "C:/AIS_FS/brokers/" + base->getBrokerByInn(inn);
+            QString name = "reg_resolution_inn_" + inn;
+            QString header = "Заключение №" + inn;
+            QString text = "Согласно данному заключению, центральный депозитарий \n"
+                           "запрещает регистрацию депозитарием 'Лучший партнёр' пользователя с ИНН:" + inn + ".";
+            base->createReport(path, name, header, text);
             base->loadAccountsDataToTable(ui->tblOutput);
         }
     } else
